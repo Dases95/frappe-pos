@@ -1,0 +1,361 @@
+/* Tailwind-based Point of Sale Styles */
+/* Scoped Tailwind styles to prevent affecting other Frappe pages */
+
+/* POS Page Specific Styles - Tailwind CSS Integration */
+.pos-page {
+	/* Ensure Tailwind styles don't conflict with Frappe */
+	a {
+		color: inherit !important;
+		text-decoration: inherit !important;
+		cursor: inherit !important;
+	}
+	
+	/* Scope Tailwind styles to POS container only */
+	.pos-tailwind-container {
+		/* Custom POS-specific styles */
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
+}
+
+/* Ensure Tailwind doesn't affect other pages */
+body:not(.pos-page) {
+	/* Reset any potential Tailwind conflicts */
+	a {
+		color: inherit !important;
+		text-decoration: inherit !important;
+		cursor: inherit !important;
+	}
+}
+
+/* Prevent Tailwind from affecting Frappe's default link styles */
+.layout-main a:not(.pos-tailwind-container a),
+.desk a:not(.pos-tailwind-container a),
+.frappe-container a:not(.pos-tailwind-container a) {
+    color: var(--text-color, #36414c) !important;
+    text-decoration: none !important;
+}
+
+/* Custom overrides for UIKit components */
+
+/* Product Card Styles */
+.product-card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+	transform: translateY(-2px);
+}
+
+.product-card.out-of-stock {
+	opacity: 0.6;
+	background: #f8f8f8;
+}
+
+/* Line clamp utility for product names */
+.line-clamp-2 {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.product-price {
+	font-weight: 600;
+}
+
+.product-stock {
+	font-size: 12px;
+}
+
+/* Product card text elements */
+.product-card .uk-card-body p {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-bottom: 8px;
+}
+
+.product-card .uk-card-body .uk-text-small {
+	line-height: 1.3;
+}
+
+/* Product card click animation */
+.product-card.product-clicked {
+	transform: scale(0.98);
+}
+
+/* Out of stock styling */
+.product-card.out-of-stock {
+	opacity: 0.6;
+}
+
+.product-card.out-of-stock:hover {
+	transform: translateY(-2px);
+}
+
+/* Cart item styling */
+.cart-item {
+	border-bottom: 1px solid #e5e5e5;
+	padding: 10px 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.cart-item:last-child {
+	border-bottom: none;
+}
+
+.cart-item .item-details {
+	flex: 1;
+	margin-right: 10px;
+}
+
+.cart-item .item-name {
+	font-weight: 600;
+	font-size: 14px;
+	color: #333;
+	margin-bottom: 2px;
+}
+
+.cart-item .item-price {
+	color: #2563eb;
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.cart-item .quantity-controls {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.cart-item .quantity-btn {
+	width: 25px;
+	height: 25px;
+	border: 1px solid #ddd;
+	background: white;
+	border-radius: 3px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+.cart-item .quantity-btn:hover {
+	background: #f3f4f6;
+	border-color: #d1d5db;
+}
+
+.cart-item .quantity-input {
+	width: 50px;
+	text-align: center;
+	border: 1px solid #d1d5db;
+	border-radius: 3px;
+	padding: 2px;
+	font-size: 12px;
+}
+
+.cart-item .remove-btn {
+	color: #dc2626;
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 3px;
+	transition: background 0.2s ease;
+}
+
+.cart-item .remove-btn:hover {
+	background: #fef2f2;
+}
+
+/* Quantity controls */
+.quantity-controls {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.quantity-controls button {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.quantity-controls input {
+	width: 60px;
+	text-align: center;
+}
+
+/* Modal specific styles */
+.modal-dialog {
+	max-width: 500px;
+	width: 90%;
+}
+
+#invoice-selection-modal .modal-dialog {
+	max-width: 800px;
+	width: 95%;
+	max-height: 90vh;
+}
+
+#receipt-modal .modal-dialog {
+	max-width: 400px;
+	width: 90%;
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 768px) {
+	.modal-dialog {
+		margin: 20px;
+		max-height: calc(100vh - 40px);
+		overflow-y: auto;
+	}
+
+	.modal-body {
+		padding: 20px;
+	}
+
+	.card-body {
+		padding: 15px;
+	}
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.product-card {
+		height: 150px;
+	}
+	
+	.product-card .uk-card-title {
+		font-size: 14px;
+	}
+	
+	.product-card .product-price {
+		font-size: 18px;
+	}
+}
+
+/* Print styles for receipts */
+@media print {
+	.uk-modal-dialog {
+		box-shadow: none;
+		border: none;
+	}
+	
+	.uk-card {
+		box-shadow: none;
+		border: none;
+	}
+	
+	.uk-card-footer {
+		display: none;
+	}
+}
+
+/* Custom button styles for POS */
+.btn-pos-primary {
+	background-color: #2563eb;
+	border-color: #2563eb;
+	color: white;
+}
+
+.btn-pos-primary:hover {
+	background-color: #1d4ed8;
+	border-color: #1d4ed8;
+}
+
+.btn-pos-secondary {
+	background-color: #6b7280;
+	border-color: #6b7280;
+	color: white;
+}
+
+.btn-pos-danger {
+	background-color: #dc2626;
+	border-color: #dc2626;
+	color: white;
+}
+
+/* Card customizations */
+.card-primary {
+	background-color: #2563eb;
+	color: white;
+}
+
+.card-default {
+	background-color: white;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Loading states */
+.loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Success/Error states */
+.uk-alert-success {
+	background-color: #f0f9ff;
+	border-color: #1e87f0;
+	color: #1e87f0;
+}
+
+/* Custom spacing for POS layout */
+.uk-section-small {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+/* Custom cart width - 40% */
+.cart-width-40 {
+	width: 40%;
+}
+
+/* Custom products width - 60% */
+.products-width-60 {
+	width: 60%;
+}
+
+@media (max-width: 1199px) {
+	.cart-width-40 {
+		width: 100%;
+	}
+	.products-width-60 {
+		width: 100%;
+	}
+}
+
+/* Ensure proper grid spacing */
+.uk-grid-small {
+	margin-left: -10px;
+}
+
+.uk-grid-small > * {
+	padding-left: 10px;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #a8a8a8;
+}

@@ -1,0 +1,124 @@
+Active,Actif
+Actual End Date,Date de fin réelle
+Actual Qty,Qté réelle
+Additional Details,Détails supplémentaires
+Additional Info,Informations supplémentaires
+Address,Adresse
+Amount,Montant
+Are you sure you want to complete production for this order?,Êtes-vous sûr de vouloir terminer la production pour cette commande?
+Are you sure you want to start production for this order?,Êtes-vous sûr de vouloir démarrer la production pour cette commande?
+At least one item is required,Au moins un article est requis
+Auto Create Batch for Receipt Entries,Création automatique de lots pour les entrées de réception
+Automatically Set Serial Nos,Définir automatiquement les numéros de série
+Available,Disponible
+Available Qty,Qté disponible
+BOM Reference,Référence de nomenclature
+Balance Qty,Qté en balance
+Barcode,Code-barres
+Batch,Lot
+Batch Details,Détails du lot
+Batch ID,ID du lot
+Batch No,N° de lot
+Batch Tracking,Suivi par lot
+Both Source and Target Warehouses are required for Transfer entry,Les entrepôts source et destination sont tous deux requis pour un transfert
+Buying,Achat
+Cancelled,Annulé
+Company,Entreprise
+Complete Production,Terminer la production
+Completed,Terminé
+Contact Details,Coordonnées
+Contact Number,Numéro de contact
+Contact Person,Personne à contacter
+Cost,Coût
+Country of Origin,Pays d'origine
+Create,Créer
+Create Delivery Note,Créer un bon de livraison
+Create Purchase Receipt,Créer un reçu d'achat
+Currency,Devise
+Customer,Client
+Customer Details,Détails du client
+Customer is required,Un client est requis
+Date,Date
+Default Warehouse,Entrepôt par défaut
+Default Warehouse not set in Inventory Settings,L'entrepôt par défaut n'est pas défini dans les paramètres d'inventaire
+Delivery Date,Date de livraison
+Delivery Note,Bon de livraison
+Delivery Note Item,Article du bon de livraison
+Description,Description
+Disabled,Désactivé
+Draft,Brouillon
+Email,Email
+Entry Type,Type d'entrée
+Expiry Date,Date d'expiration
+Fiscal Year,Année fiscale
+Has Batch,A un lot
+Insufficient stock for item,Stock insuffisant pour l'article
+Inventory,Inventaire
+Inventory Settings,Paramètres d'inventaire
+Inventory Settings doctype not found. Please create it first.,Le doctype Paramètres d'inventaire est introuvable. Veuillez le créer d'abord.
+Issue,Sortie
+Item,Article
+Item Code,Code article
+Item Details,Détails de l'article
+Item Group,Groupe d'articles
+Item Name,Nom de l'article
+Item Type,Type d'article
+Items,Articles
+Items and Pricing,Articles et Prix
+Last Purchase Rate,Dernier taux d'achat
+Manufacture,Fabrication
+Order Date,Date de commande
+Partially Delivered,Partiellement livré
+Please select Item first,Veuillez d'abord sélectionner un article
+Posting Date,Date de comptabilisation
+Posting Time,Heure de comptabilisation
+Price List,Liste de prix
+Price List Item,Article de liste de prix
+Purchase Order,Bon de commande
+Purchase Receipt,Reçu d'achat
+Quantity,Quantité
+Rate,Taux
+Receipt,Réception
+Receipt Date,Date de réception
+Reference,Référence
+Reference Document,Document de référence
+Remarks,Remarques
+Reports,Rapports
+Required,Requis
+Sales Order,Bon de commande client
+Selling,Vente
+Selling Price,Prix de vente
+Serial No,N° de série
+Series,Série
+Setup,Configuration
+Source Warehouse,Entrepôt source
+Source Warehouse is required for Issue entry,L'entrepôt source est requis pour une sortie
+Status,Statut
+Stock,Stock
+Stock Balance,Solde de stock
+Stock Entry,Entrée de stock
+Stock Entry created,Entrée de stock créée
+Stock Ledger,Registre de stock
+Stock Ledger Entry,Entrée du registre de stock
+Stock Ledger Report,Rapport du registre de stock
+Stock Balance Report,Rapport de solde de stock
+Stock Transactions,Transactions de stock
+Supplier,Fournisseur
+Supplier is required,Un fournisseur est requis
+Target Warehouse,Entrepôt cible
+Target Warehouse is required for Receipt entry,L'entrepôt cible est requis pour une réception
+Target Warehouse is required for Manufacture entry,L'entrepôt cible est requis pour une fabrication
+Time,Heure
+Total Amount,Montant total
+Totals,Totaux
+Transfer,Transfert
+UOM,UDM
+Unit of Measurement,Unité de mesure
+Use last purchase rate + markup,Utiliser le dernier prix d'achat + marge
+Valuation,Évaluation
+Valuation Rate,Taux d'évaluation
+Value,Valeur
+Value Difference,Différence de valeur
+View,Voir
+Warehouse,Entrepôt
+Warehouse Details,Détails de l'entrepôt 

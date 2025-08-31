@@ -1,0 +1,188 @@
+{
+ "autoname": "naming_series:",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "entry_type",
+  "date",
+  "column_break_4",
+  "status",
+  "reference_document",
+  "warehouse_section",
+  "source_warehouse",
+  "column_break_8",
+  "target_warehouse",
+  "items_section",
+  "item_group",
+  "items",
+  "total_amount_section",
+  "total_amount",
+  "additional_info_section",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "default": "STE-.YYYY.-.MM.-.#####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "STE-.YYYY.-.MM.-.#####"
+  },
+  {
+   "fieldname": "entry_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Entry Type",
+   "options": "Receipt\nIssue\nTransfer\nManufacture",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSubmitted\nCancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_document",
+   "fieldtype": "Data",
+   "label": "Reference Document"
+  },
+  {
+   "fieldname": "warehouse_section",
+   "fieldtype": "Section Break",
+   "label": "Warehouse"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "label": "Target Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Stock Entry Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_amount_section",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1,
+   "options": "currency",
+   "precision": 2
+  },
+  {
+   "fieldname": "additional_info_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Info"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Stock Entry",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 0,
+   "cancel": 0,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "entry_type,date,source_warehouse,target_warehouse",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+} 

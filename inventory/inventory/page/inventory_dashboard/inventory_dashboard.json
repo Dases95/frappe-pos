@@ -1,0 +1,25 @@
+{
+ "creation": "2023-10-01 10:00:00",
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2023-10-01 10:00:00",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "inventory_dashboard",
+ "owner": "Administrator",
+ "page_name": "Inventory Dashboard",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Inventory Manager"
+  },
+  {
+   "role": "Inventory User"
+  }
+ ],
+ "standard": "Yes",
+ "system_page": 0,
+ "title": "Inventory Dashboard"
+} 

@@ -1,0 +1,86 @@
+{
+ "autoname": "field:commune_name",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "commune_name",
+  "commune_code",
+  "wilaya",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "commune_name",
+   "fieldtype": "Data",
+   "label": "Commune Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "commune_code",
+   "fieldtype": "Data",
+   "label": "Commune Code",
+   "reqd": 1,
+   "description": "Numeric code for the Commune (municipality) in Algeria"
+  },
+  {
+   "fieldname": "wilaya",
+   "fieldtype": "Link",
+   "label": "Wilaya",
+   "options": "Wilaya",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Commune",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 0
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "search_fields": "commune_name,commune_code,wilaya",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "commune_name",
+ "track_changes": 1
+} 

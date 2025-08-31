@@ -1,0 +1,8 @@
+{
+  "js/inventory.js": [
+    "public/js/pricing.js"
+  ],
+  "css/inventory.css": [
+    "public/css/inventory.css"
+  ]
+} 

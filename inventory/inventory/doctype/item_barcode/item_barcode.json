@@ -1,0 +1,36 @@
+{
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "barcode",
+  "barcode_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "barcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Barcode",
+   "reqd": 1
+  },
+  {
+   "fieldname": "barcode_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Barcode Type",
+   "options": "EAN\nUPC\nCode 128\nCode 39\nQR Code\nOther",
+   "default": "EAN"
+  }
+ ],
+ "istable": 1,
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Item Barcode",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

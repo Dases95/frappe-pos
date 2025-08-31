@@ -1,0 +1,204 @@
+/* Inventory CSS */ 
+
+/* Inventory App Custom Styles */
+
+/* Customer Form Styling */
+.customer-form .section-head {
+    font-size: 16px;
+    color: #4d5154;
+    font-weight: 600;
+    padding: 15px 0 5px 0;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.customer-form .form-section:not(:first-child) {
+    margin-top: 20px;
+}
+
+.customer-form .address-display {
+    padding: 15px;
+    border-left: 4px solid #5e64ff;
+    background-color: #f8f8f8;
+    border-radius: 0 4px 4px 0;
+    margin-top: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.customer-form .frappe-control[data-fieldname="full_address_display"] .control-value {
+    overflow: visible !important;
+}
+
+/* Enhanced Indicator Pills */
+.indicator-pill {
+    border-radius: 10px;
+    padding: 2px 10px;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.indicator-pill.green {
+    background-color: #28a745;
+    color: white;
+}
+
+.indicator-pill.red {
+    background-color: #dc3545;
+    color: white;
+}
+
+.indicator-pill.blue {
+    background-color: #5e64ff;
+    color: white;
+}
+
+.indicator-pill.orange {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.indicator-pill.purple {
+    background-color: #743ee2;
+    color: white;
+}
+
+/* Customer List View Enhancements */
+.list-row-container {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.list-row-container:hover {
+    background-color: #f8f8f8;
+    border-left: 3px solid #5e64ff;
+}
+
+.customer-list .list-row-head {
+    background-color: #f7fafc;
+    border-bottom: 2px solid #eef0f2;
+    font-weight: 600;
+}
+
+/* Report Styling */
+.report-summary {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.report-summary-item {
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    padding: 12px 15px;
+    min-width: 150px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 3px solid #5e64ff;
+}
+
+.summary-value {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.summary-label {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Summary View for Reports */
+.summary-section {
+    margin-top: 15px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.summary-card {
+    border: 1px solid #d1d8dd;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background-color: #f8f8f8;
+    padding: 12px 15px;
+    border-bottom: 1px solid #d1d8dd;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #4d5154;
+}
+
+.card-body {
+    padding: 12px 15px;
+}
+
+/* Button Styling */
+.custom-btn {
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background-color: #5e64ff !important;
+    border-color: #5e64ff !important;
+}
+
+.btn-primary:hover {
+    background-color: #4a51ef !important;
+    border-color: #4a51ef !important;
+}
+
+/* Action Button Groups */
+.action-btn-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Map View */
+#customer-map {
+    height: 500px;
+    width: 100%;
+    border: 1px solid #d1d8dd;
+    border-radius: 4px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 767px) {
+    .report-summary {
+        flex-direction: column;
+    }
+    
+    .report-summary-item {
+        width: 100%;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .list-row-container {
+        border-left: none;
+    }
+    
+    .indicator-pill {
+        border: 1px solid #d1d8dd;
+    }
+    
+    .report-summary-item {
+        border: 1px solid #d1d8dd;
+    }
+} 

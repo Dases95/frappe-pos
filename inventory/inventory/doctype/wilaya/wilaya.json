@@ -1,0 +1,79 @@
+{
+ "autoname": "field:wilaya_name",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "wilaya_name",
+  "wilaya_code",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "wilaya_name",
+   "fieldtype": "Data",
+   "label": "Wilaya Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "wilaya_code",
+   "fieldtype": "Data",
+   "label": "Wilaya Code",
+   "reqd": 1,
+   "unique": 1,
+   "description": "Numeric code for the Wilaya (province) in Algeria"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Wilaya",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 0
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "search_fields": "wilaya_name,wilaya_code",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "wilaya_name",
+ "track_changes": 1
+} 

@@ -1,0 +1,151 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:profile_name",
+ "creation": "2024-01-01 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "profile_name",
+  "company_name",
+  "warehouse_name",
+  "currency",
+  "column_break_5",
+  "is_default",
+  "validate_stock_on_save",
+  "allow_negative_stock",
+  "section_break_9",
+  "payment_methods",
+  "section_break_11",
+  "print_format",
+  "letter_head"
+ ],
+ "fields": [
+  {
+   "fieldname": "profile_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Profile Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "reqd": 0
+  },
+  {
+   "fieldname": "warehouse_name",
+   "fieldtype": "Link",
+   "label": "Warehouse Name",
+   "options": "Warehouse",
+   "reqd": 0
+  },
+  {
+   "default": "DZD",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": 0,
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Is Default"
+  },
+  {
+   "default": 1,
+   "fieldname": "validate_stock_on_save",
+   "fieldtype": "Check",
+   "label": "Validate Stock on Save"
+  },
+  {
+   "default": 0,
+   "fieldname": "allow_negative_stock",
+   "fieldtype": "Check",
+   "label": "Allow Negative Stock"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break",
+   "label": "Payment Methods"
+  },
+  {
+   "fieldname": "payment_methods",
+   "fieldtype": "Table",
+   "label": "Payment Methods",
+   "options": "POS Payment Method"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Print Settings"
+  },
+  {
+   "fieldname": "print_format",
+   "fieldtype": "Data",
+   "label": "Print Format"
+  },
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Data",
+   "label": "Letter Head"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "POS",
+ "name": "POS Profile",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS User",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

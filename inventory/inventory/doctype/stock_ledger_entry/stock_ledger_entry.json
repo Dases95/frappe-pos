@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2023-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "warehouse",
+  "posting_date",
+  "posting_time",
+  "voucher_type",
+  "voucher_no",
+  "voucher_detail_no",
+  "batch_no",
+  "actual_qty",
+  "valuation_rate",
+  "stock_value_difference",
+  "company",
+  "fiscal_year",
+  "is_cancelled"
+ ],
+ "fields": [
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Data",
+   "label": "Voucher Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Data",
+   "label": "Voucher No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_detail_no",
+   "fieldtype": "Data",
+   "label": "Voucher Detail No"
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Link",
+   "label": "Batch No",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "actual_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Actual Qty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Float",
+   "label": "Valuation Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "stock_value_difference",
+   "fieldtype": "Currency",
+   "label": "Stock Value Difference",
+   "options": "currency",
+   "precision": 2
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Data",
+   "label": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Stock Ledger Entry",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+} 

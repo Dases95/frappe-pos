@@ -1,0 +1,231 @@
+{
+ "autoname": "field:item_code",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item_details_section",
+  "item_code",
+  "item_name",
+  "description",
+  "item_image",
+  "barcodes",
+  "column_break_6",
+  "item_group",
+  "brand_name",
+  "item_type",
+  "unit_of_measurement",
+  "country_of_origin",
+  "disabled",
+  "inventory_section",
+  "default_warehouse",
+  "minimum_stock_level",
+  "reorder_level",
+  "column_break_14",
+  "batch_tracking",
+  "expiry_date_tracking",
+  "sales_section",
+  "standard_rate",
+  "is_sales_item",
+  "valuation_section", 
+  "valuation_rate",
+  "last_purchase_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_details_section",
+   "fieldtype": "Section Break",
+   "label": "Item Details"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "item_image",
+   "fieldtype": "Attach Image",
+   "label": "Item Image"
+  },
+  {
+   "fieldname": "barcodes",
+   "fieldtype": "Table",
+   "label": "Barcodes",
+   "options": "Item Barcode"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Select",
+   "label": "Item Group",
+   "options": "Spice\nVinegar",
+   "reqd": 1
+  },
+  {
+   "fieldname": "brand_name",
+   "fieldtype": "Data",
+   "label": "Brand"
+  },
+  {
+   "fieldname": "item_type",
+   "fieldtype": "Select",
+   "label": "Item Type",
+   "options": "Manufactured\nPurchased",
+   "reqd": 1
+  },
+  {
+   "fieldname": "unit_of_measurement",
+   "fieldtype": "Link",
+   "label": "Unit of Measurement",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "country_of_origin",
+   "fieldtype": "Data",
+   "label": "Country of Origin"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "inventory_section",
+   "fieldtype": "Section Break",
+   "label": "Inventory"
+  },
+  {
+   "fieldname": "default_warehouse",
+   "fieldtype": "Link",
+   "label": "Default Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "minimum_stock_level",
+   "fieldtype": "Float",
+   "label": "Minimum Stock Level"
+  },
+  {
+   "fieldname": "reorder_level",
+   "fieldtype": "Float",
+   "label": "Reorder Level"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "batch_tracking",
+   "fieldtype": "Check",
+   "label": "Batch Tracking"
+  },
+  {
+   "default": "0",
+   "fieldname": "expiry_date_tracking",
+   "fieldtype": "Check",
+   "label": "Expiry Date Tracking"
+  },
+  {
+   "fieldname": "sales_section",
+   "fieldtype": "Section Break",
+   "label": "Sales"
+  },
+  {
+   "fieldname": "standard_rate",
+   "fieldtype": "Currency",
+   "label": "Standard Selling Rate",
+   "options": "currency",
+   "precision": 2
+  },
+  {
+   "default": "1",
+   "fieldname": "is_sales_item",
+   "fieldtype": "Check",
+   "label": "Is Sales Item"
+  },
+  {
+   "fieldname": "valuation_section",
+   "fieldtype": "Section Break",
+   "label": "Valuation"
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Currency",
+   "label": "Valuation Rate",
+   "options": "currency",
+   "precision": 2
+  },
+  {
+   "fieldname": "last_purchase_rate",
+   "fieldtype": "Currency",
+   "label": "Last Purchase Rate",
+   "options": "currency",
+   "precision": 2
+  }
+ ],
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Item",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "search_fields": "item_name,item_code,item_group,brand_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "item_name",
+ "track_changes": 1
+}

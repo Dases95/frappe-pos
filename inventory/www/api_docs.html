@@ -1,0 +1,23 @@
+<!-- API Documentation page -->
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="api-documentation">
+    {{ api_docs_html }}
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+    /* Override default padding to allow full-width Swagger UI */
+    .page-content-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+    
+    .api-documentation {
+        width: 100%;
+    }
+</style>
+{% endblock %} 

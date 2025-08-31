@@ -5,6 +5,11 @@ app_description = "test"
 app_email = "dases@protonmail.com"
 app_license = "mit"
 
+# Translations
+# --------------
+# Directory path for translations CSV files
+translations_path = 'inventory/translations'
+
 # Apps
 # ------------------
 
@@ -25,8 +30,8 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/inventory/css/inventory.css"
-# app_include_js = "/assets/inventory/js/inventory.js"
+app_include_css = "/assets/inventory/css/inventory.css"
+app_include_js = "/assets/inventory/js/inventory.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/inventory/css/inventory.css"
@@ -83,7 +88,25 @@ app_license = "mit"
 # ------------
 
 # before_install = "inventory.install.before_install"
-# after_install = "inventory.install.after_install"
+after_install = "inventory.install_fixtures.after_install"
+
+# Fixtures
+# -------------
+fixtures = [
+    "Wilaya",
+    "Commune",
+    {
+        "dt": "Report",
+        "filters": [["report_name", "in", ["Customers by Region"]]]
+    }
+]
+
+# Custom commands (bench inventory extract-geography, bench inventory install-geography, bench inventory create-algeria-test-data)
+# ---------------------
+commands = [
+    "inventory.commands.fixtures",
+    "inventory.commands.test_data"
+]
 
 # Uninstallation
 # ------------

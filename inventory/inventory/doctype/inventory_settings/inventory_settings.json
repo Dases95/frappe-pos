@@ -1,0 +1,82 @@
+{
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouses_section",
+  "default_warehouse",
+  "valuation_settings_section",
+  "enable_perpetual_inventory",
+  "automatically_set_serial_nos",
+  "auto_create_batch"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouses_section",
+   "fieldtype": "Section Break",
+   "label": "Warehouses"
+  },
+  {
+   "fieldname": "default_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Default Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valuation_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Valuation Settings"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_perpetual_inventory",
+   "fieldtype": "Check",
+   "label": "Enable Perpetual Inventory"
+  },
+  {
+   "default": "0",
+   "fieldname": "automatically_set_serial_nos",
+   "fieldtype": "Check",
+   "label": "Automatically Set Serial Nos"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_create_batch",
+   "fieldtype": "Check", 
+   "label": "Auto Create Batch for Receipt Entries"
+  }
+ ],
+ "issingle": 1,
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Inventory Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+} 

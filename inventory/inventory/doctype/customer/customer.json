@@ -1,0 +1,181 @@
+{
+ "actions": [],
+ "autoname": "field:customer_name",
+ "creation": "2023-10-01 10:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_details_section",
+  "customer_name",
+  "customer_type",
+  "status",
+  "image",
+  "contact_section",
+  "contact_person",
+  "contact_number",
+  "email",
+  "address_section",
+  "wilaya",
+  "commune",
+  "address",
+  "full_address_display",
+  "customer_settings_section",
+  "payment_terms",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Customer Type",
+   "options": "Retailer\nWholesaler\nDistributor",
+   "reqd": 1
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nInactive"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Details"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Person",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Number",
+   "reqd": 1
+  },
+  {
+   "description": "Enter a valid email address",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address Information"
+  },
+  {
+   "description": "Select the province/wilaya",
+   "fieldname": "wilaya",
+   "fieldtype": "Link",
+   "label": "Wilaya",
+   "options": "Wilaya"
+  },
+  {
+   "description": "Select the commune (filtered by selected wilaya)",
+   "fieldname": "commune",
+   "fieldtype": "Link",
+   "label": "Commune",
+   "options": "Commune"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Street Address"
+  },
+  {
+   "fieldname": "full_address_display",
+   "fieldtype": "HTML",
+   "label": "Full Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Settings"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text Editor",
+   "label": "Notes"
+  }
+ ],
+ "image_field": "image",
+ "links": [],
+ "modified": "2025-06-21 18:31:19.127193",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Customer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "customer_name,contact_person,email,wilaya,commune",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

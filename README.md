@@ -1,6 +1,27 @@
 ### Inventory
 
-test
+An inventory management application with enhanced geographical features for Algeria.
+
+## Features
+
+### Geographic Data for Algeria
+- **Wilaya DocType**: Manages administrative divisions of Algeria (provinces/states)
+- **Commune DocType**: Manages sub-divisions within wilayas (municipalities)
+- **Customer DocType**: Enhanced with geographic data and location features
+
+### Reports
+- **Customers by Region**: View and analyze customers grouped by wilaya and commune
+
+## Geographic Data Management
+
+### Commands
+```bash
+# Extract geography data from source files
+bench inventory extract-geography
+
+# Install geography data into your site
+bench inventory install-geography
+```
 
 ### Installation
 

@@ -1,0 +1,229 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2024-01-01 00:00:00",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "pos_profile",
+  "pos_user",
+  "period_start_date",
+  "period_end_date",
+  "column_break_6",
+  "status",
+  "opening_time",
+  "closing_time",
+  "session_details_section",
+  "opening_amount",
+  "total_quantity",
+  "column_break_12",
+  "closing_amount",
+  "net_total",
+  "grand_total",
+  "profit_analysis_section",
+  "total_cost",
+  "total_profit",
+  "column_break_profit",
+  "profit_margin_percent",
+  "payment_reconciliation_section",
+  "payment_reconciliation_details"
+ ],
+ "fields": [
+  {
+   "default": "POS-SESS-.YYYY.-.MM.-.DD.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "POS-SESS-.YYYY.-.MM.-.DD.-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "POS Profile",
+   "options": "POS Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "period_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "period_end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Opening",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Opening\nOpen\nClosing\nClosed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "opening_time",
+   "fieldtype": "Datetime",
+   "label": "Opening Time"
+  },
+  {
+   "fieldname": "closing_time",
+   "fieldtype": "Datetime",
+   "label": "Closing Time"
+  },
+  {
+   "fieldname": "session_details_section",
+   "fieldtype": "Section Break",
+   "label": "Session Details"
+  },
+  {
+   "fieldname": "opening_amount",
+   "fieldtype": "Currency",
+   "label": "Opening Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "closing_amount",
+   "fieldtype": "Currency",
+   "label": "Expected Closing Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "profit_analysis_section",
+   "fieldtype": "Section Break",
+   "label": "Profit Analysis"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_profit",
+   "fieldtype": "Currency",
+   "label": "Total Profit",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_profit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "profit_margin_percent",
+   "fieldtype": "Percent",
+   "label": "Profit Margin %",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_reconciliation_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Reconciliation"
+  },
+  {
+   "fieldname": "payment_reconciliation_details",
+   "fieldtype": "Table",
+   "label": "Payment Reconciliation Details",
+   "options": "POS Session Payment"
+  },
+  {
+   "fieldname": "pos_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Pos User",
+   "options": "User",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-06 14:32:46.544780",
+ "modified_by": "daes@protonmail.com",
+ "module": "POS",
+ "name": "POS Session",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

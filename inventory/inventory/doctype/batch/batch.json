@@ -1,0 +1,141 @@
+{
+ "autoname": "field:batch_id",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_details_section",
+  "batch_id",
+  "item",
+  "item_name",
+  "column_break_4",
+  "manufacturing_date",
+  "expiry_date",
+  "has_expired",
+  "supply_details_section",
+  "supplier",
+  "supplier_batch_id",
+  "column_break_10",
+  "cost"
+ ],
+ "fields": [
+  {
+   "fieldname": "batch_details_section",
+   "fieldtype": "Section Break",
+   "label": "Batch Details"
+  },
+  {
+   "fieldname": "batch_id",
+   "fieldtype": "Data",
+   "label": "Batch ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "manufacturing_date",
+   "fieldtype": "Date",
+   "label": "Manufacturing Date"
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_expired",
+   "fieldtype": "Check",
+   "label": "Has Expired",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supply_details_section",
+   "fieldtype": "Section Break",
+   "label": "Supply Details"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "supplier_batch_id",
+   "fieldtype": "Data",
+   "label": "Supplier Batch ID"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost",
+   "fieldtype": "Currency",
+   "label": "Cost"
+  }
+ ],
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Batch",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "search_fields": "batch_id,item,item_name,expiry_date",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+} 

@@ -1,0 +1,320 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2024-01-01 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "pos_profile",
+  "pos_session",
+  "customer",
+  "posting_date",
+  "posting_time",
+  "column_break_7",
+  "company",
+  "warehouse",
+  "currency",
+  "conversion_rate",
+  "items_section",
+  "items",
+  "totals_section",
+  "total_qty",
+  "net_total",
+  "column_break_15",
+  "grand_total",
+  "rounded_total",
+  "rounding_adjustment",
+  "profit_section",
+  "total_cost",
+  "total_profit",
+  "column_break_profit",
+  "profit_margin_percent",
+  "payment_section",
+  "payments",
+  "paid_amount",
+  "column_break_21",
+  "change_amount",
+  "status",
+  "additional_info_section",
+  "remarks",
+  "column_break_25",
+  "is_return"
+ ],
+ "fields": [
+  {
+   "default": "POS-INV-.YYYY.-.MM.-.DD.-.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "POS-INV-.YYYY.-.MM.-.DD.-.####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "POS Profile",
+   "options": "POS Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pos_session",
+   "fieldtype": "Link",
+   "label": "POS Session",
+   "options": "POS Session"
+  },
+  {
+   "default": "Walk-in Customer",
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company",
+   "reqd": 0
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Data",
+   "label": "Warehouse",
+   "reqd": 0
+  },
+  {
+   "default": "DZD",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "default": "1.0",
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate",
+   "precision": "9"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "POS Invoice Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Quantity",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rounded_total",
+   "fieldtype": "Currency",
+   "label": "Rounded Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rounding_adjustment",
+   "fieldtype": "Currency",
+   "label": "Rounding Adjustment",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "profit_section",
+   "fieldtype": "Section Break",
+   "label": "Profit Analysis"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_profit",
+   "fieldtype": "Currency",
+   "label": "Total Profit",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_profit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "profit_margin_percent",
+   "fieldtype": "Percent",
+   "label": "Profit Margin %",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_section",
+   "fieldtype": "Section Break",
+   "label": "Payment"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "label": "Payments",
+   "options": "POS Invoice Payment"
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "change_amount",
+   "fieldtype": "Currency",
+   "label": "Change Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nPaid\nConsolidated\nCancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "additional_info_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Information"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_25",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": 0,
+   "fieldname": "is_return",
+   "fieldtype": "Check",
+   "label": "Is Return"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "POS",
+ "name": "POS Invoice",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "POS User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

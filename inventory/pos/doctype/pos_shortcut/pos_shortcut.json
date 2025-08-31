@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "shortcut_name",
+  "shortcut_type",
+  "shortcut_key",
+  "column_break_4",
+  "item_code",
+  "item_name",
+  "action_type",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "shortcut_name",
+   "fieldtype": "Data",
+   "label": "Shortcut Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shortcut_type",
+   "fieldtype": "Select",
+   "label": "Shortcut Type",
+   "options": "Product\nFunction\nPayment",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shortcut_key",
+   "fieldtype": "Data",
+   "label": "Shortcut Key",
+   "placeholder": "e.g., 1, 2, 3 or F1, F2, etc.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item",
+   "depends_on": "eval:doc.shortcut_type=='Product'"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "depends_on": "eval:doc.shortcut_type=='Product'"
+  },
+  {
+   "fieldname": "action_type",
+   "fieldtype": "Select",
+   "label": "Action Type",
+   "options": "New Sale\nClose Session\nPrint Receipt\nClear Cart\nToggle Language",
+   "depends_on": "eval:doc.shortcut_type=='Function'"
+  },
+  {
+   "default": 1,
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "POS",
+ "name": "POS Shortcut",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "track_views": 1
+} 

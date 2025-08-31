@@ -1,0 +1,98 @@
+{
+ "autoname": "field:warehouse_name",
+ "creation": "2023-10-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "warehouse_details_section",
+  "warehouse_name",
+  "warehouse_code",
+  "warehouse_type",
+  "address",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse_details_section",
+   "fieldtype": "Section Break",
+   "label": "Warehouse Details"
+  },
+  {
+   "fieldname": "warehouse_name",
+   "fieldtype": "Data",
+   "label": "Warehouse Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "warehouse_code",
+   "fieldtype": "Data",
+   "label": "Warehouse Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "warehouse_type",
+   "fieldtype": "Select",
+   "label": "Warehouse Type",
+   "options": "Raw Materials\nFinished Goods\nDistribution",
+   "reqd": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  }
+ ],
+ "modified": "2023-10-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "Warehouse",
+ "name_case": "Title Case",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Inventory User",
+   "share": 1
+  }
+ ],
+ "search_fields": "warehouse_name,warehouse_code,warehouse_type",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+} 
