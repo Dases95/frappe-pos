@@ -1,0 +1,51 @@
+2025-09-10 19:19:02,529 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"purple","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-11 19:06:20,278 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"light-blue","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-11 19:09:09,417 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"yellow","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-12 00:15:28,883 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"yellow","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-13 11:14:00,142 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"orange","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-13 18:56:45,925 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"cyan","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-15 12:16:46,477 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"cyan","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-15 12:17:09,993 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"orange","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-16 13:13:57,384 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"purple","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-16 13:14:45,805 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"purple","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-18 12:56:51,749 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"cyan","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-21 10:30:23,108 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"yellow","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-21 10:52:09,060 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"darkgrey","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-21 12:06:18,425 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"gray","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-21 12:24:30,186 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"pink","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-22 19:07:56,225 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"gray","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}
+2025-09-24 13:10:44,741 ERROR frappe New Exception collected in error log
+Site: market.localhost
+Form Dict: {'page': '{"name":"POS","title":"POS","for_user":null,"parent_page":"","content":null,"public":1,"module":"POS","icon":"pos","indicator_color":"pink","is_hidden":0,"label":"POS","is_editable":true,"selected":true}', 'cmd': 'frappe.desk.desktop.get_desktop_page'}

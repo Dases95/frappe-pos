@@ -1,0 +1,140 @@
+2025-09-10 18:41:56,103 DEBUG cd frappe-bench-v15 && python3 -m venv env
+2025-09-10 18:42:03,832 DEBUG cd frappe-bench-v15 && /home/khlix52/projects/frappe-bench-v15/env/bin/python -m pip install --quiet --upgrade pip
+2025-09-10 18:42:08,146 DEBUG cd frappe-bench-v15 && /home/khlix52/projects/frappe-bench-v15/env/bin/python -m pip install --quiet wheel
+2025-09-10 18:42:11,543 LOG Getting frappe
+2025-09-10 18:42:11,544 DEBUG cd frappe-bench-v15/apps && git clone https://github.com/frappe/frappe.git --branch version-15 --depth 1 --origin upstream
+2025-09-10 18:42:31,857 LOG Installing frappe
+2025-09-10 18:42:31,864 DEBUG cd /home/khlix52/projects/frappe-bench-v15 && /home/khlix52/projects/frappe-bench-v15/env/bin/python -m pip install --quiet --upgrade -e /home/khlix52/projects/frappe-bench-v15/apps/frappe 
+2025-09-10 18:44:03,324 DEBUG cd /home/khlix52/projects/frappe-bench-v15/apps/frappe && yarn install --check-files
+2025-09-10 18:44:40,138 DEBUG cd frappe-bench-v15 && bench build
+2025-09-10 18:44:40,398 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench build
+2025-09-10 18:45:28,163 LOG setting up backups
+2025-09-10 18:45:28,220 LOG backups were set up
+2025-09-10 18:45:28,221 INFO Bench frappe-bench-v15 initialized
+2025-09-10 18:53:28,832 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench new-site market.localhost --db-type postgres
+2025-09-10 19:00:35,600 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench get-app https://github.com/Dases95/frappe-pos
+2025-09-10 19:00:35,632 LOG Getting frappe-pos
+2025-09-10 19:00:35,632 DEBUG cd ./apps && git clone https://github.com/Dases95/frappe-pos  --depth 1 --origin upstream
+2025-09-10 19:00:37,755 LOG Installing inventory
+2025-09-10 19:00:37,756 DEBUG cd /home/khlix52/projects/frappe-bench-v15 && /home/khlix52/projects/frappe-bench-v15/env/bin/python -m pip install --quiet --upgrade -e /home/khlix52/projects/frappe-bench-v15/apps/inventory 
+2025-09-10 19:00:45,769 DEBUG bench build --app inventory
+2025-09-10 19:00:46,224 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench build --app inventory
+2025-09-10 19:02:55,158 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --site market.localhost install-app inventory
+2025-09-10 19:04:00,428 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --site market.localhost migrate
+2025-09-10 19:04:20,285 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench build
+2025-09-10 19:07:56,164 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-10 19:07:57,555 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-10 19:07:57,591 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-10 19:07:57,621 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-10 19:07:57,738 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-10 19:15:29,715 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-10 19:15:30,596 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-10 19:15:30,725 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-10 19:15:30,786 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-10 19:15:30,806 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-11 00:00:02,067 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-11 12:00:01,928 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-11 18:00:02,747 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-11 19:04:16,877 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-11 19:04:19,300 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-11 19:04:19,398 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-11 19:04:19,441 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-11 19:04:19,454 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-11 19:21:29,767 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench set-config -g developer_mode 1
+2025-09-11 19:24:04,735 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-11 19:24:07,052 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-11 19:24:07,112 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-11 19:24:07,118 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-11 19:24:07,167 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-12 00:00:04,294 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-13 10:28:38,790 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-13 10:28:40,856 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-13 10:28:40,929 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-13 10:28:41,134 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-13 10:28:41,380 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-13 12:00:04,256 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-13 18:55:20,145 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-13 18:55:21,161 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-13 18:55:21,164 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-13 18:55:21,220 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-13 18:55:21,242 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-14 12:00:02,495 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-15 12:00:01,876 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-16 12:00:02,383 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-16 13:03:59,476 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-16 13:04:01,513 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-16 13:04:01,540 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-16 13:04:01,575 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-16 13:04:01,596 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-17 00:00:04,086 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-17 12:00:04,124 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-18 12:00:06,172 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-18 12:54:38,496 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-18 12:54:39,288 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-18 12:54:39,297 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-18 12:54:39,353 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-18 12:54:39,488 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-20 19:55:35,086 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --site market.local migrate
+2025-09-20 20:09:50,067 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --site market.localhost migrate
+2025-09-20 20:53:21,090 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench console
+2025-09-20 20:53:48,248 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench use market.localhost
+2025-09-20 20:53:54,141 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench console
+2025-09-21 10:02:36,748 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-21 10:02:37,465 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-21 10:02:37,486 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-21 10:02:37,492 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-21 10:02:37,549 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-21 10:50:30,903 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-21 10:50:33,401 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-21 10:50:33,421 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-21 10:50:33,421 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-21 10:50:33,446 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-21 12:05:20,484 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-21 12:05:21,620 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-21 12:05:21,643 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-21 12:05:21,651 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-21 12:05:21,806 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-22 00:00:03,042 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-22 10:35:28,712 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-22 10:35:29,868 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-22 10:35:29,878 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-22 10:35:29,939 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-22 10:35:29,970 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-22 12:00:05,416 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-22 15:08:36,516 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-22 15:08:37,635 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-22 15:08:37,665 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-22 15:08:37,700 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-22 15:08:37,704 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-22 19:04:19,187 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-22 19:04:23,507 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-22 19:04:23,725 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-22 19:04:23,748 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-22 19:04:23,756 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-23 00:15:26,173 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-23 11:14:40,635 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-23 11:14:42,145 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-23 11:14:42,244 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-23 11:14:42,332 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-23 11:14:42,360 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-23 12:02:30,595 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-23 18:00:01,978 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-23 20:21:32,961 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-23 20:21:39,625 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-23 20:21:39,866 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-23 20:21:39,979 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-23 20:21:40,164 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-24 00:00:09,531 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-24 10:50:40,627 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-24 10:50:41,882 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-24 10:50:41,902 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-24 10:50:41,945 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-24 10:50:42,066 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-24 12:00:02,344 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-24 18:00:02,687 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
+2025-09-25 11:59:45,250 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench start
+2025-09-25 11:59:46,466 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench schedule
+2025-09-25 11:59:46,515 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench watch
+2025-09-25 11:59:46,518 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench serve --port 8000
+2025-09-25 11:59:46,528 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench worker
+2025-09-25 12:00:04,120 INFO /home/khlix52/.pyenv/versions/3.10.18/bin/bench --verbose --site all backup
