@@ -1,0 +1,443 @@
+Active,نشط
+Actual End Date,تاريخ الانتهاء الفعلي
+Actual Qty,الكمية الفعلية
+Additional Details,تفاصيل إضافية
+Additional Info,معلومات إضافية
+Address,العنوان
+Amount,المبلغ
+Are you sure you want to complete production for this order?,هل أنت متأكد من أنك تريد إكمال الإنتاج لهذا الطلب؟
+Are you sure you want to start production for this order?,هل أنت متأكد من أنك تريد بدء الإنتاج لهذا الطلب؟
+At least one item is required,مطلوب صنف واحد على الأقل
+Auto Create Batch for Receipt Entries,إنشاء دفعة تلقائياً لإدخالات الاستلام
+Automatically Set Serial Nos,تعيين الأرقام التسلسلية تلقائياً
+Available,متاح
+Available Qty,الكمية المتاحة
+BOM Reference,مرجع قائمة المواد
+Balance Qty,كمية الرصيد
+Barcode,الباركود
+Batch,الدفعة
+Batch Details,تفاصيل الدفعة
+Batch ID,معرف الدفعة
+Batch No,رقم الدفعة
+Batch Tracking,تتبع الدفعات
+Both Source and Target Warehouses are required for Transfer entry,كلا المستودعين المصدر والوجهة مطلوبان لعملية التحويل
+Buying,الشراء
+Cancelled,ملغي
+Company,الشركة
+Complete Production,إكمال الإنتاج
+Completed,مكتمل
+Contact Details,بيانات الاتصال
+Contact Number,رقم الاتصال
+Contact Person,الشخص المسؤول
+Cost,التكلفة
+Cost Amount,مبلغ التكلفة
+Country of Origin,بلد المنشأ
+Create,إنشاء
+Create Delivery Note,إنشاء إذن تسليم
+Create Purchase Receipt,إنشاء إيصال شراء
+Currency,العملة
+Customer,العميل
+Customer Details,بيانات العميل
+Customer Name,اسم العميل
+Customer is required,العميل مطلوب
+Date,التاريخ
+Default,افتراضي
+Default Price,السعر الافتراضي
+Default Warehouse,المستودع الافتراضي
+Default Warehouse not set in Inventory Settings,المستودع الافتراضي غير محدد في إعدادات المخزون
+Delivery Date,تاريخ التسليم
+Delivery Note,إذن تسليم
+Delivery Note Item,صنف إذن التسليم
+Description,الوصف
+Disabled,معطل
+Draft,مسودة
+Duplicate Item,صنف مكرر
+Duplicate items found,تم العثور على أصناف مكررة
+Each item can only be added once.,يمكن إضافة كل صنف مرة واحدة فقط.
+Email,البريد الإلكتروني
+Enabled,مفعل
+Entry Type,نوع القيد
+Expiry Date,تاريخ انتهاء الصلاحية
+Fiscal Year,السنة المالية
+First Purchase,أول عملية شراء
+First Receipt Date,تاريخ أول استلام
+From Date,من تاريخ
+General,عام
+Gross Profit,الربح الإجمالي
+Group By,تجميع حسب
+Has Batch,يحتوي على دفعة
+Has Expired,منتهي الصلاحية
+Historical,تاريخي
+Insufficient stock for item,المخزون غير كافٍ للصنف
+Inventory,المخزون
+Inventory Manager,مدير المخزون
+Inventory Settings,إعدادات المخزون
+Inventory Settings doctype not found. Please create it first.,لم يتم العثور على نوع مستند إعدادات المخزون. يرجى إنشاؤه أولاً.
+Inventory User,مستخدم المخزون
+Is Cancelled,ملغي
+Issue,صرف
+Item,الصنف
+Item Code,كود الصنف
+Item Details,تفاصيل الصنف
+Item Group,مجموعة الصنف
+Item Movement,حركة الصنف
+Item Name,اسم الصنف
+Item Price,سعر الصنف
+Item Profit Analysis,تحليل أرباح الأصناف
+Item Type,نوع الصنف
+Item is already added in the items list. Please select a different item.,الصنف موجود بالفعل في القائمة. يرجى اختيار صنف آخر.
+Items,الأصناف
+Items and Pricing,الأصناف والتسعير
+Last Purchase,آخر عملية شراء
+Last Purchase Rate,آخر سعر شراء
+Low Stock,مخزون منخفض
+Low Stock Alert,تنبيه انخفاض المخزون
+Manufacture,تصنيع
+Modified,تم التعديل
+No price found for this item. Please enter the rate manually.,لم يتم العثور على سعر لهذا الصنف. يرجى إدخال السعر يدوياً.
+OK,موافق
+Opening Qty,كمية الافتتاح
+Order Date,تاريخ الطلب
+Other In,وارد أخرى
+Other Out,صادر أخرى
+Out of Stock,نفاد المخزون
+Partially Delivered,تم التسليم جزئياً
+Party Specific,خاص بالطرف
+Please select Item first,يرجى اختيار الصنف أولاً
+Posting Date,تاريخ الترحيل
+Posting Time,وقت الترحيل
+Price,السعر
+Price Information,معلومات السعر
+Price List,قائمة الأسعار
+Price List Item,صنف قائمة الأسعار
+Price List Rate,سعر القائمة
+Profit,الربح
+Profit %,نسبة الربح %
+Purchase Amount,مبلغ الشراء
+Purchase Count,عدد المشتريات
+Purchase Order,أمر الشراء
+Purchase Receipt,إيصال استلام
+Purchase Receipt Item,صنف إيصال الاستلام
+Purchase Value,قيمة المشتريات
+Purchased,تم الشراء
+Purchased Qty,الكمية المشتراة
+Qty,الكمية
+Qty Purchased,الكمية المشتراة
+Qty Sold,الكمية المباعة
+Quantity,الكمية
+Rate,السعر
+Receipt,استلام
+Receipt Date,تاريخ الاستلام
+Reference,المرجع
+Reference Document,المستند المرجعي
+Remarks,ملاحظات
+Reorder Level,مستوى إعادة الطلب
+Reorder Qty,كمية إعادة الطلب
+Report,تقرير
+Reports,التقارير
+Required,مطلوب
+Safety Stock,مخزون الأمان
+Sales Amount,مبلغ المبيعات
+Sales Order,أمر البيع
+Sales Value,قيمة المبيعات
+Selling,البيع
+Selling Price,سعر البيع
+Serial No,الرقم التسلسلي
+Series,السلسلة
+Setup,الإعداد
+Shortage,العجز
+Show All Items,عرض جميع الأصناف
+Sold,تم البيع
+Source Warehouse,المستودع المصدر
+Source Warehouse is required for Issue entry,المستودع المصدر مطلوب لعملية الصرف
+Status,الحالة
+Stock,المخزون
+Stock Aging,عمر المخزون
+Stock Balance,رصيد المخزون
+Stock Entry,حركة مخزنية
+Stock Entry created,تم إنشاء الحركة المخزنية
+Stock Ledger,دفتر المخزون
+Stock Ledger Entry,قيد دفتر المخزون
+Stock Ledger Report,تقرير دفتر المخزون
+Stock Balance Report,تقرير رصيد المخزون
+Stock Quantity,كمية المخزون
+Stock Transactions,معاملات المخزون
+Stock Value,قيمة المخزون
+Submitted,معتمد
+Supplier,المورد
+Supplier Name,اسم المورد
+Supplier Purchase Analysis,تحليل مشتريات الموردين
+Supplier is required,المورد مطلوب
+System Manager,مدير النظام
+Target Warehouse,المستودع الوجهة
+Target Warehouse is required for Receipt entry,المستودع الوجهة مطلوب لعملية الاستلام
+Target Warehouse is required for Manufacture entry,المستودع الوجهة مطلوب لعملية التصنيع
+Time,الوقت
+To Date,إلى تاريخ
+Total,الإجمالي
+Total Amount,المبلغ الإجمالي
+Total Items,إجمالي الأصناف
+Totals,الإجماليات
+Transfer,تحويل
+UOM,وحدة القياس
+Unit of Measurement,وحدة القياس
+Updated pricing for {0} items based on customer {1}:,تم تحديث أسعار {0} صنف بناءً على العميل {1}:
+Use last purchase rate + markup,استخدام آخر سعر شراء + هامش الربح
+Valid From,صالح من
+Valid Upto,صالح حتى
+Validity,الصلاحية
+Valuation,التقييم
+Valuation Rate,معدل التقييم
+Value,القيمة
+Value Difference,فرق القيمة
+View,عرض
+Voucher No,رقم القسيمة
+Voucher Type,نوع القسيمة
+Warehouse,المستودع
+Warehouse Details,تفاصيل المستودع
+Warning,تحذير
+customer-specific prices,أسعار خاصة بالعميل
+default selling prices,أسعار البيع الافتراضية
+default prices (buy/sell),الأسعار الافتراضية (شراء/بيع)
+general selling prices,أسعار البيع العامة
+valuation rates with markup,معدلات التقييم مع هامش الربح
+supplier-specific prices,أسعار خاصة بالمورد
+default buying prices,أسعار الشراء الافتراضية
+general buying prices,أسعار الشراء العامة
+historical purchase rates,أسعار الشراء التاريخية
+- {0} items using {1},- {0} صنف باستخدام {1}
+Age (Days),العمر (أيام)
+0-30 Days,0-30 يوم
+31-60 Days,31-60 يوم
+61-90 Days,61-90 يوم
+90+ Days,أكثر من 90 يوم
+Avg Cost Price,متوسط سعر التكلفة
+Avg Daily Sales,متوسط المبيعات اليومية
+Avg Order Value,متوسط قيمة الطلب
+Avg Rate,متوسط السعر
+Avg Selling Price,متوسط سعر البيع
+Closing Qty,كمية الإغلاق
+Closing Value,قيمة الإغلاق
+Current Stock,المخزون الحالي
+Days of Stock,أيام المخزون
+Gross Profit,إجمالي الربح
+Items,الأصناف
+No,لا
+Yes,نعم
+Cancel,إلغاء
+Save,حفظ
+Submit,اعتماد
+Print,طباعة
+Delete,حذف
+Edit,تعديل
+New,جديد
+Refresh,تحديث
+Export,تصدير
+Filter,تصفية
+Clear,مسح
+Search,بحث
+Loading,جاري التحميل
+Please wait,يرجى الانتظار
+Error,خطأ
+Success,نجاح
+Information,معلومات
+Confirmation,تأكيد
+Batch,الدفعة
+Batch Name,اسم الدفعة
+Manufacturing Date,تاريخ التصنيع
+Expiry Date,تاريخ انتهاء الصلاحية
+Has Expired,منتهي الصلاحية
+Batch Qty,كمية الدفعة
+Brand,العلامة التجارية
+Brand Name,اسم العلامة التجارية
+Commune,البلدية
+Commune Name,اسم البلدية
+Wilaya,الولاية
+Wilaya Code,رمز الولاية
+Wilaya Name,اسم الولاية
+Customer,العميل
+Customer Name,اسم العميل
+Customer Type,نوع العميل
+Customer Group,مجموعة العملاء
+Territory,المنطقة
+Contact Email,البريد الإلكتروني للتواصل
+Contact Phone,هاتف التواصل
+Contact Mobile,الجوال
+Primary Address,العنوان الرئيسي
+Billing Address,عنوان الفوترة
+Shipping Address,عنوان الشحن
+Tax ID,الرقم الضريبي
+Credit Limit,حد الائتمان
+Outstanding Balance,الرصيد المستحق
+Total Sales,إجمالي المبيعات
+Item,الصنف
+Item Code,كود الصنف
+Item Name,اسم الصنف
+Item Description,وصف الصنف
+Item Group,مجموعة الصنف
+Item Category,تصنيف الصنف
+Default Unit of Measure,وحدة القياس الافتراضية
+Standard Selling Rate,سعر البيع القياسي
+Standard Buying Rate,سعر الشراء القياسي
+Valuation Rate,معدل التقييم
+Last Purchase Rate,آخر سعر شراء
+Minimum Order Qty,الحد الأدنى لكمية الطلب
+Safety Stock,مخزون الأمان
+Reorder Level,مستوى إعادة الطلب
+Reorder Qty,كمية إعادة الطلب
+Lead Time Days,أيام وقت التوريد
+Shelf Life In Days,مدة الصلاحية بالأيام
+End of Life,نهاية الصلاحية
+Default Supplier,المورد الافتراضي
+Default Warehouse,المستودع الافتراضي
+Weight Per Unit,الوزن لكل وحدة
+Weight UOM,وحدة قياس الوزن
+Has Variants,له متغيرات
+Variant Of,متغير من
+Is Stock Item,صنف مخزني
+Is Purchase Item,صنف للشراء
+Is Sales Item,صنف للبيع
+Is Fixed Asset,أصل ثابت
+Item Barcode,باركود الصنف
+Barcode,الباركود
+Barcode Type,نوع الباركود
+Item Price,سعر الصنف
+Buying,شراء
+Selling,بيع
+Price List Rate,سعر القائمة
+Valid From,صالح من
+Valid Upto,صالح حتى
+Supplier,المورد
+Supplier Name,اسم المورد
+Supplier Group,مجموعة الموردين
+Supplier Type,نوع المورد
+Contact Name,اسم جهة الاتصال
+Phone,الهاتف
+Mobile No,رقم الجوال
+Fax,الفاكس
+Website,الموقع الإلكتروني
+Is Internal Supplier,مورد داخلي
+Is Transporter,ناقل
+Warehouse,المستودع
+Warehouse Name,اسم المستودع
+Warehouse Type,نوع المستودع
+Parent Warehouse,المستودع الرئيسي
+Is Group,مجموعة
+Account,الحساب
+UOM,وحدة القياس
+UOM Name,اسم وحدة القياس
+Must be Whole Number,يجب أن يكون عدداً صحيحاً
+Purchase Order,أمر الشراء
+Purchase Order Item,صنف أمر الشراء
+Order Date,تاريخ الطلب
+Delivery Date,تاريخ التسليم
+Expected Delivery Date,تاريخ التسليم المتوقع
+Required By,مطلوب بحلول
+Order Confirmation Date,تاريخ تأكيد الطلب
+Order Confirmation No,رقم تأكيد الطلب
+Purchase Receipt,إيصال استلام
+Purchase Receipt Item,صنف إيصال الاستلام
+Receipt Date,تاريخ الاستلام
+Accepted Qty,الكمية المقبولة
+Rejected Qty,الكمية المرفوضة
+Received Qty,الكمية المستلمة
+Returned Qty,الكمية المرتجعة
+Billed Qty,الكمية المفوترة
+Sales Order,أمر البيع
+Sales Order Item,صنف أمر البيع
+Customer Address,عنوان العميل
+Shipping Address Name,اسم عنوان الشحن
+Delivery Status,حالة التسليم
+Billing Status,حالة الفوترة
+Per Delivered,نسبة التسليم
+Per Billed,نسبة الفوترة
+Delivery Note,إذن تسليم
+Delivery Note Item,صنف إذن التسليم
+Against Sales Order,مقابل أمر البيع
+Against Sales Order Item,مقابل صنف أمر البيع
+Stock Entry,حركة مخزنية
+Stock Entry Item,صنف الحركة المخزنية
+Stock Entry Type,نوع الحركة المخزنية
+Material Issue,صرف مواد
+Material Receipt,استلام مواد
+Material Transfer,تحويل مواد
+Manufacture,تصنيع
+Repack,إعادة تعبئة
+Opening Stock,مخزون افتتاحي
+Stock Reconciliation,تسوية المخزون
+From Warehouse,من المستودع
+To Warehouse,إلى المستودع
+Source Warehouse,المستودع المصدر
+Target Warehouse,المستودع الوجهة
+Stock Ledger Entry,قيد دفتر المخزون
+Actual Qty,الكمية الفعلية
+Stock Value Difference,فرق قيمة المخزون
+Is Cancelled,ملغي
+Voucher Type,نوع القسيمة
+Voucher No,رقم القسيمة
+Voucher Detail No,رقم تفصيل القسيمة
+Manufacturing Order,أمر تصنيع
+Bill Of Materials,قائمة المواد
+BOM No,رقم قائمة المواد
+Qty To Manufacture,الكمية للتصنيع
+Manufactured Qty,الكمية المصنعة
+Work In Progress Warehouse,مستودع العمل الجاري
+Finished Goods Warehouse,مستودع المنتجات النهائية
+Scrap Warehouse,مستودع الخردة
+Raw Materials,المواد الخام
+Finished Goods,المنتجات النهائية
+Operating Cost,تكلفة التشغيل
+Additional Operating Cost,تكلفة تشغيل إضافية
+Total Operating Cost,إجمالي تكلفة التشغيل
+Total Raw Material Cost,إجمالي تكلفة المواد الخام
+Total Cost,التكلفة الإجمالية
+Start Production,بدء الإنتاج
+Complete Production,إكمال الإنتاج
+Production Plan,خطة الإنتاج
+Production Status,حالة الإنتاج
+Planned Start Date,تاريخ البدء المخطط
+Planned End Date,تاريخ الانتهاء المخطط
+Actual Start Date,تاريخ البدء الفعلي
+Actual End Date,تاريخ الانتهاء الفعلي
+Not Started,لم يبدأ
+In Progress,قيد التنفيذ
+Completed,مكتمل
+Stopped,متوقف
+Inventory Settings,إعدادات المخزون
+Stock Frozen Upto,تجميد المخزون حتى
+Stock Auth Role,دور صلاحية المخزون
+Allow Negative Stock,السماح بالمخزون السالب
+Automatically Set Serial Nos Based On FIFO,تعيين الأرقام التسلسلية تلقائياً بناءً على FIFO
+Set Qty In Transactions Based On Serial No Input,تعيين الكمية في المعاملات بناءً على إدخال الرقم التسلسلي
+Auto Create Batch For Receipt Entries,إنشاء دفعة تلقائياً لإدخالات الاستلام
+Item Category,تصنيف الصنف
+Category Name,اسم التصنيف
+Parent Item Category,التصنيف الرئيسي
+Item Group,مجموعة الصنف
+Group Name,اسم المجموعة
+Parent Item Group,المجموعة الرئيسية
+Price List,قائمة الأسعار
+Price List Name,اسم قائمة الأسعار
+Currency,العملة
+Buying or Selling,شراء أو بيع
+Price Not UOM Dependent,السعر غير معتمد على وحدة القياس
+Enabled,مفعل
+Is Default,افتراضي
+Is Default Price,سعر افتراضي
+Price List Item,صنف قائمة الأسعار
+Min Qty,الحد الأدنى للكمية
+Max Qty,الحد الأقصى للكمية
+Produit,المنتج
+Test,اختبار
+Purchase,شراء
+Sale,بيع
+Expiry Date Tracking,تتبع تاريخ الصلاحية
+Manufacturing Date,تاريخ التصنيع
+Days to Expiry,أيام حتى انتهاء الصلاحية
+Expiring Soon,ينتهي قريباً
+Expiring Soon (Days),ينتهي قريباً (أيام)
+Warning (Days),تحذير (أيام)
+Hide Good Status,إخفاء الحالة الجيدة
+Batches,الدفعات
+Good,جيد
+

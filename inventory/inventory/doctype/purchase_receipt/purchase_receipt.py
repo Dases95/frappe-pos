@@ -48,10 +48,13 @@ class PurchaseReceipt(Document):
     
     def create_stock_entry(self):
         """
-        Create a Stock Entry for received items
+        Create a Stock Entry for received items from suppliers
+        
+        Note: We use "Purchase" entry type to track supplier purchases separately
+        from internal "Receipt" movements
         """
         stock_entry = frappe.new_doc("Stock Entry")
-        stock_entry.entry_type = "Receipt"
+        stock_entry.entry_type = "Purchase"  # Purchase type for supplier receipts
         stock_entry.reference_document = self.name
         stock_entry.date = self.receipt_date
         

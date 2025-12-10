@@ -60,7 +60,7 @@ def get_stock_balance_data(filters):
             SUM(actual_qty) as balance_qty,
             SUM(actual_qty * valuation_rate) as total_value
         FROM 
-            `tabStock Ledger Entry` 
+            "tabStock Ledger Entry" 
         {where_clause}
         GROUP BY 
             item, warehouse, batch_no

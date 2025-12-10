@@ -120,9 +120,10 @@
    "search_index": 1
   }
  ],
+ "hide_toolbar": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-25 21:53:44.713438",
+ "modified": "2025-12-09 21:27:45.426690",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Purchase Receipt",

@@ -23,12 +23,14 @@ frappe.ui.form.on('Stock Entry', {
     
     entry_type: function(frm) {
         // Hide/show fields based on entry type
-        frm.toggle_reqd("source_warehouse", ["Issue", "Transfer"].includes(frm.doc.entry_type));
-        frm.toggle_reqd("target_warehouse", ["Receipt", "Transfer", "Manufacture"].includes(frm.doc.entry_type));
+        // Issue and Sale require source warehouse (stock going out)
+        // Receipt, Purchase, Transfer, Manufacture require target warehouse (stock coming in)
+        frm.toggle_reqd("source_warehouse", ["Issue", "Sale", "Transfer"].includes(frm.doc.entry_type));
+        frm.toggle_reqd("target_warehouse", ["Receipt", "Purchase", "Transfer", "Manufacture"].includes(frm.doc.entry_type));
         
-        if (frm.doc.entry_type === "Receipt") {
+        if (frm.doc.entry_type === "Receipt" || frm.doc.entry_type === "Purchase") {
             frm.set_value("source_warehouse", "");
-        } else if (frm.doc.entry_type === "Issue") {
+        } else if (frm.doc.entry_type === "Issue" || frm.doc.entry_type === "Sale") {
             frm.set_value("target_warehouse", "");
         }
     },

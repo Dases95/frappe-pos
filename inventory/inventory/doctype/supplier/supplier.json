@@ -1,72 +1,154 @@
 {
+ "actions": [],
  "autoname": "field:supplier_name",
- "creation": "2023-10-01 10:00:00.000000",
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "supplier_details_section",
   "supplier_name",
   "supplier_type",
-  "tax_id",
+  "column_break_1",
   "status",
+  "legal_information_section",
+  "rc_number",
+  "nif_number",
+  "column_break_legal",
+  "nis_number",
+  "article_imposition",
   "contact_section",
   "contact_person",
   "contact_number",
+  "column_break_contact",
   "email",
+  "mobile",
+  "address_section",
+  "wilaya",
+  "commune",
+  "column_break_address",
   "address",
-  "payment_terms"
+  "notes_section",
+  "notes"
  ],
  "fields": [
   {
    "fieldname": "supplier_details_section",
    "fieldtype": "Section Break",
-   "label": "Supplier Details"
+   "label": "Supplier Information"
   },
   {
    "fieldname": "supplier_name",
    "fieldtype": "Data",
-   "label": "Supplier Name",
+   "in_list_view": 1,
+   "label": "Supplier Name (Raison Sociale)",
    "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "supplier_type",
-   "fieldtype": "Data",
-   "label": "Supplier Type"
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Supplier Type",
+   "options": "\nManufacturer\nWholesaler\nDistributor\nImporter\nService Provider\nOther"
   },
   {
-   "fieldname": "tax_id",
-   "fieldtype": "Data",
-   "label": "Tax ID"
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
   },
   {
    "default": "Active",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Active\nInactive"
+   "options": "Active\nInactive\nBlocked"
+  },
+  {
+   "fieldname": "legal_information_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Information"
+  },
+  {
+   "description": "Commercial register number",
+   "fieldname": "rc_number",
+   "fieldtype": "Data",
+   "label": "RC Number (Registre de Commerce)"
+  },
+  {
+   "description": "Tax identification number",
+   "fieldname": "nif_number",
+   "fieldtype": "Data",
+   "label": "NIF (Num\u00e9ro d'Identification Fiscale)"
+  },
+  {
+   "fieldname": "column_break_legal",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Statistical identification number",
+   "fieldname": "nis_number",
+   "fieldtype": "Data",
+   "label": "NIS (Num\u00e9ro d'Identification Statistique)"
+  },
+  {
+   "description": "Article of taxation",
+   "fieldname": "article_imposition",
+   "fieldtype": "Data",
+   "label": "Article d'Imposition"
   },
   {
    "fieldname": "contact_section",
    "fieldtype": "Section Break",
-   "label": "Contact Details"
+   "label": "Contact Information"
   },
   {
    "fieldname": "contact_person",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Contact Person",
    "reqd": 1
   },
   {
    "fieldname": "contact_number",
    "fieldtype": "Data",
-   "label": "Contact Number",
+   "in_list_view": 1,
+   "label": "Phone Number",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email"
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile"
+  },
+  {
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address"
+  },
+  {
+   "fieldname": "wilaya",
+   "fieldtype": "Link",
+   "label": "Wilaya",
+   "options": "Wilaya"
+  },
+  {
+   "fieldname": "commune",
+   "fieldtype": "Link",
+   "label": "Commune",
+   "options": "Commune"
+  },
+  {
+   "fieldname": "column_break_address",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "address",
@@ -74,16 +156,23 @@
    "label": "Address"
   },
   {
-   "fieldname": "payment_terms",
-   "fieldtype": "Small Text",
-   "label": "Payment Terms"
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text Editor",
+   "label": "Notes"
   }
  ],
- "modified": "2023-10-01 10:00:00.000000",
+ "hide_toolbar": 1,
+ "links": [],
+ "modified": "2025-12-10 08:25:50.412036",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Supplier",
- "name_case": "Title Case",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -100,7 +189,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -120,9 +208,11 @@
    "share": 1
   }
  ],
- "search_fields": "supplier_name,contact_person,email",
+ "row_format": "Dynamic",
+ "search_fields": "supplier_name,contact_person,email,nif_number,rc_number,wilaya",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "supplier_name",
  "track_changes": 1
-} 
+}

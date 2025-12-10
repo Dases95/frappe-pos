@@ -1,10 +1,23 @@
 frappe.ui.form.on('Delivery Note', {
     refresh: function(frm) {
-        // Set query filters for Item
-        frm.set_query("item", "items", function() {
+        // Set query filters for Item - exclude already selected items
+        frm.set_query("item", "items", function(doc, cdt, cdn) {
+            // Get list of already selected items (excluding current row)
+            let selected_items = [];
+            let current_row = locals[cdt][cdn];
+            
+            if(doc.items && doc.items.length) {
+                doc.items.forEach(function(item) {
+                    if(item.item && item.name !== current_row.name) {
+                        selected_items.push(item.item);
+                    }
+                });
+            }
+            
             return {
                 filters: {
-                    disabled: 0
+                    disabled: 0,
+                    name: ["not in", selected_items]
                 }
             };
         });
@@ -46,6 +59,28 @@ frappe.ui.form.on('Delivery Note', {
     },
     
     validate: function(frm) {
+        // Check for duplicate items before saving
+        if(frm.doc.items && frm.doc.items.length > 1) {
+            let items_list = [];
+            let duplicates = [];
+            
+            frm.doc.items.forEach(function(item) {
+                if(item.item) {
+                    if(items_list.includes(item.item)) {
+                        if(!duplicates.includes(item.item)) {
+                            duplicates.push(item.item);
+                        }
+                    } else {
+                        items_list.push(item.item);
+                    }
+                }
+            });
+            
+            if(duplicates.length > 0) {
+                frappe.throw(__('Duplicate items found: {0}. Each item can only be added once.', [duplicates.join(', ')]));
+            }
+        }
+        
         calculate_total_amount(frm);
     },
     
@@ -58,63 +93,24 @@ frappe.ui.form.on('Delivery Note', {
             
             frm.doc.items.forEach(function(item, idx) {
                 if(item.item) {
-                    // Check if inventory.pricing is available
-                    if (typeof inventory !== 'undefined' && inventory.pricing) {
-                        // Use pricing utility to get customer-specific prices
-                        inventory.pricing.get_item_price(item.item, true, customer, null, function(rate, price_list) {
-                            if(rate > 0) {
-                                frappe.model.set_value("Delivery Note Item", item.name, "rate", rate);
-                                updated_items++;
-                                
-                                if(idx === frm.doc.items.length - 1 && updated_items > 0) {
-                                    frappe.msgprint(`Updated pricing for ${updated_items} items based on customer ${customer}`);
-                                }
+                    // Fallback to basic item price retrieval
+                    get_item_selling_price(item.item, customer, function(rate, price_source) {
+                        if(rate > 0) {
+                            frappe.model.set_value("Delivery Note Item", item.name, "rate", rate);
+                            updated_items++;
+                            
+                            // Keep track of price sources
+                            if (!price_sources[price_source]) {
+                                price_sources[price_source] = 0;
                             }
-                        });
-                    } else {
-                        // Fallback to basic item price retrieval if utility is not available
-                        get_basic_selling_price(item.item, customer, function(rate, price_source) {
-                            if(rate > 0) {
-                                frappe.model.set_value("Delivery Note Item", item.name, "rate", rate);
-                                updated_items++;
-                                
-                                // Keep track of price sources
-                                if (!price_sources[price_source]) {
-                                    price_sources[price_source] = 0;
-                                }
-                                price_sources[price_source]++;
-                                
-                                // Show summary after all items are processed
-                                if(idx === frm.doc.items.length - 1 && updated_items > 0) {
-                                    let summary = `Updated pricing for ${updated_items} items based on customer ${customer}:\n`;
-                                    for (let source in price_sources) {
-                                        let source_label = "";
-                                        switch(source) {
-                                            case "customer-specific":
-                                                source_label = "customer-specific prices";
-                                                break;
-                                            case "default-selling":
-                                                source_label = "default selling prices";
-                                                break;
-                                            case "default-both":
-                                                source_label = "default prices (buy/sell)";
-                                                break;
-                                            case "general":
-                                                source_label = "general selling prices";
-                                                break;
-                                            case "valuation":
-                                                source_label = "valuation rates with markup";
-                                                break;
-                                            default:
-                                                source_label = source;
-                                        }
-                                        summary += `- ${price_sources[source]} items using ${source_label}\n`;
-                                    }
-                                    frappe.msgprint(summary);
-                                }
+                            price_sources[price_source]++;
+                            
+                            // Show summary after all items are processed
+                            if(idx === frm.doc.items.length - 1 && updated_items > 0) {
+                                show_price_update_summary(updated_items, customer, price_sources);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             });
         }
@@ -156,9 +152,124 @@ frappe.ui.form.on('Delivery Note', {
     }
 });
 
-// Basic function to get selling prices if the inventory.pricing utility is not available
-function get_basic_selling_price(item_code, customer, callback) {
-    // First try customer-specific price
+// Child table events for Delivery Note Item
+frappe.ui.form.on('Delivery Note Item', {
+    // When item is selected, automatically fetch the price
+    item: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if(row.item) {
+            // Fetch price for the item
+            let customer = frm.doc.customer || null;
+            get_item_selling_price(row.item, customer, function(rate, price_source) {
+                if(rate > 0) {
+                    frappe.model.set_value(cdt, cdn, "rate", rate);
+                    // Calculate amount if quantity exists
+                    if(row.quantity) {
+                        frappe.model.set_value(cdt, cdn, "amount", flt(row.quantity) * flt(rate));
+                    }
+                }
+            });
+        }
+    },
+    
+    // Recalculate amount when quantity changes
+    quantity: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if(row.quantity && row.rate) {
+            frappe.model.set_value(cdt, cdn, "amount", flt(row.quantity) * flt(row.rate));
+        }
+        calculate_total_amount(frm);
+    },
+    
+    // Recalculate amount when rate changes
+    rate: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if(row.quantity && row.rate) {
+            frappe.model.set_value(cdt, cdn, "amount", flt(row.quantity) * flt(row.rate));
+        }
+        calculate_total_amount(frm);
+    },
+    
+    // Recalculate total when amount changes
+    amount: function(frm, cdt, cdn) {
+        calculate_total_amount(frm);
+    },
+    
+    // Recalculate total when row is removed
+    items_remove: function(frm) {
+        calculate_total_amount(frm);
+    }
+});
+
+/**
+ * Get item selling price with priority:
+ * 1. Customer-specific selling price (if customer is provided)
+ * 2. Default selling price (is_default_price=1, selling=1)
+ * 3. General selling price (no customer, not default)
+ * 4. Valuation rate with markup as last resort
+ */
+function get_item_selling_price(item_code, customer, callback) {
+    let today = frappe.datetime.get_today();
+    
+    // Step 1: Try customer-specific price first (if customer is provided)
+    if(customer) {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Item Price",
+                filters: {
+                    "item_code": item_code,
+                    "selling": 1,
+                    "customer": customer,
+                    "enabled": 1
+                },
+                fields: ["price_list_rate", "valid_from", "valid_upto"],
+                order_by: "is_default_price desc, modified desc",
+                limit: 1
+            },
+            callback: function(r) {
+                if(r.message && r.message.length > 0) {
+                    let price = r.message[0];
+                    // Check validity dates
+                    if(is_price_valid(price, today)) {
+                        callback(price.price_list_rate, "customer-specific");
+                        return;
+                    }
+                }
+                // No valid customer-specific price, try default
+                get_default_selling_price(item_code, today, callback);
+            }
+        });
+    } else {
+        // No customer, go directly to default price
+        get_default_selling_price(item_code, today, callback);
+    }
+}
+
+/**
+ * Check if price is valid for given date
+ */
+function is_price_valid(price, today) {
+    let valid_from = price.valid_from;
+    let valid_upto = price.valid_upto;
+    
+    // Check valid_from
+    if(valid_from && valid_from > today) {
+        return false;
+    }
+    
+    // Check valid_upto
+    if(valid_upto && valid_upto < today) {
+        return false;
+    }
+    
+    return true;
+}
+
+/**
+ * Step 2: Get default selling price
+ */
+function get_default_selling_price(item_code, today, callback) {
     frappe.call({
         method: "frappe.client.get_list",
         args: {
@@ -166,99 +277,98 @@ function get_basic_selling_price(item_code, customer, callback) {
             filters: {
                 "item_code": item_code,
                 "selling": 1,
-                "customer": customer,
+                "is_default_price": 1,
                 "enabled": 1
             },
-            fields: ["price_list_rate"],
-            order_by: "modified desc",
-            limit: 1
+            fields: ["price_list_rate", "buying", "valid_from", "valid_upto"],
+            order_by: "buying asc, modified desc",
+            limit: 5
         },
         callback: function(r) {
             if(r.message && r.message.length > 0) {
-                callback(r.message[0].price_list_rate, "customer-specific");
-            } else {
-                // Try default selling price
-                frappe.call({
-                    method: "frappe.client.get_list",
-                    args: {
-                        doctype: "Item Price",
-                        filters: {
-                            "item_code": item_code,
-                            "selling": 1,
-                            "buying": 0,
-                            "is_default_price": 1,
-                            "enabled": 1
-                        },
-                        fields: ["price_list_rate"],
-                        order_by: "modified desc",
-                        limit: 1
-                    },
-                    callback: function(r) {
-                        if(r.message && r.message.length > 0) {
-                            callback(r.message[0].price_list_rate, "default-selling");
-                        } else {
-                            // Try default buying+selling price
-                            frappe.call({
-                                method: "frappe.client.get_list",
-                                args: {
-                                    doctype: "Item Price",
-                                    filters: {
-                                        "item_code": item_code,
-                                        "selling": 1,
-                                        "buying": 1,
-                                        "is_default_price": 1,
-                                        "enabled": 1
-                                    },
-                                    fields: ["price_list_rate"],
-                                    order_by: "modified desc",
-                                    limit: 1
-                                },
-                                callback: function(r) {
-                                    if(r.message && r.message.length > 0) {
-                                        callback(r.message[0].price_list_rate, "default-both");
-                                    } else {
-                                        // Try general price (no customer and not default)
-                                        frappe.call({
-                                            method: "frappe.client.get_list",
-                                            args: {
-                                                doctype: "Item Price",
-                                                filters: {
-                                                    "item_code": item_code,
-                                                    "selling": 1,
-                                                    "customer": ["in", ["", null]],
-                                                    "is_default_price": 0,
-                                                    "enabled": 1
-                                                },
-                                                fields: ["price_list_rate"],
-                                                order_by: "modified desc",
-                                                limit: 1
-                                            },
-                                            callback: function(r) {
-                                                if(r.message && r.message.length > 0) {
-                                                    callback(r.message[0].price_list_rate, "general");
-                                                } else {
-                                                    // Try getting from the item's valuation rate with a markup
-                                                    frappe.db.get_value('Item', item_code, ['valuation_rate'], function(item_values) {
-                                                        if(item_values && item_values.valuation_rate) {
-                                                            // Apply a 20% markup on valuation rate as fallback
-                                                            let markup_rate = flt(item_values.valuation_rate) * 1.2;
-                                                            callback(markup_rate, "valuation");
-                                                        } else {
-                                                            callback(0, "none");
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        }
+                // Find first valid price
+                for(let price of r.message) {
+                    if(is_price_valid(price, today)) {
+                        let price_source = price.buying ? "default-both" : "default-selling";
+                        callback(price.price_list_rate, price_source);
+                        return;
                     }
-                });
+                }
             }
+            // No valid default price, try general selling price
+            get_general_selling_price(item_code, today, callback);
         }
     });
+}
+
+/**
+ * Step 3: Get general selling price (no customer, not default)
+ */
+function get_general_selling_price(item_code, today, callback) {
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Item Price",
+            filters: {
+                "item_code": item_code,
+                "selling": 1,
+                "enabled": 1
+            },
+            fields: ["price_list_rate", "valid_from", "valid_upto", "customer"],
+            order_by: "modified desc",
+            limit: 10
+        },
+        callback: function(r) {
+            if(r.message && r.message.length > 0) {
+                // Find first valid price without customer
+                for(let price of r.message) {
+                    if(!price.customer && is_price_valid(price, today)) {
+                        callback(price.price_list_rate, "general");
+                        return;
+                    }
+                }
+            }
+            // No valid general price, try valuation rate
+            get_valuation_rate_price(item_code, callback);
+        }
+    });
+}
+
+/**
+ * Step 4: Get valuation rate with markup as last resort
+ */
+function get_valuation_rate_price(item_code, callback) {
+    frappe.db.get_value('Item', item_code, ['valuation_rate'], function(item_values) {
+        if(item_values && item_values.valuation_rate) {
+            // Apply 20% markup on valuation rate as fallback
+            let markup_rate = flt(item_values.valuation_rate) * 1.2;
+            callback(markup_rate, "valuation");
+        } else {
+            callback(0, "none");
+        }
+    });
+}
+
+/**
+ * Show summary message for price updates
+ */
+function show_price_update_summary(updated_items, customer, price_sources) {
+    let summary = __("Updated pricing for {0} items based on customer {1}:", [updated_items, customer]) + "\n";
+    
+    const source_labels = {
+        "customer-specific": __("customer-specific prices"),
+        "default-selling": __("default selling prices"),
+        "default-both": __("default prices (buy/sell)"),
+        "general": __("general selling prices"),
+        "valuation": __("valuation rates with markup")
+    };
+    
+    for (let source in price_sources) {
+        let label = source_labels[source] || source;
+        summary += __("- {0} items using {1}", [price_sources[source], label]) + "\n";
+    }
+    
+    frappe.msgprint(summary);
 }
 
 // Calculate total amount for all items

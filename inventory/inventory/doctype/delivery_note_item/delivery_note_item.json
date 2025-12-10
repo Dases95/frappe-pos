@@ -1,16 +1,17 @@
 {
- "creation": "2023-10-01 10:00:00.000000",
+ "actions": [],
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "uom",
   "item_name",
   "quantity",
   "column_break_4",
   "rate",
   "amount",
-  "uom",
   "batch",
   "delivery_note",
   "sales_order"
@@ -60,6 +61,7 @@
    "fetch_from": "item.unit_of_measurement",
    "fieldname": "uom",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "UOM",
    "options": "UOM",
    "read_only": 1
@@ -87,13 +89,16 @@
   }
  ],
  "istable": 1,
- "modified": "2023-10-01 10:00:00.000000",
+ "links": [],
+ "modified": "2025-12-09 21:18:04.187808",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Delivery Note Item",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
-} 
+}

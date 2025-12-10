@@ -33,7 +33,7 @@ class DeliveryNote(Document):
             # Get available stock from all warehouses
             available_stock = frappe.db.sql("""
                 SELECT SUM(actual_qty) 
-                FROM `tabStock Ledger Entry` 
+                FROM "tabStock Ledger Entry" 
                 WHERE item = %s AND is_cancelled = 0
             """, item.item)[0][0] or 0
             
@@ -57,11 +57,11 @@ class DeliveryNote(Document):
         """
         Create a Stock Entry for delivered items
         
-        Note: We use "Issue" entry type because a delivery note reduces inventory
-        (items are going out from the warehouse to the customer)
+        Note: We use "Sale" entry type for delivery notes to track sales separately
+        from internal "Issue" movements
         """
         stock_entry = frappe.new_doc("Stock Entry")
-        stock_entry.entry_type = "Issue"  # Correct type for deliveries (reducing inventory)
+        stock_entry.entry_type = "Sale"  # Sale type for customer deliveries
         stock_entry.reference_document = self.name
         stock_entry.date = self.delivery_date
         

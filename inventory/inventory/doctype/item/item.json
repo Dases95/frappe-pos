@@ -1,45 +1,45 @@
 {
+ "actions": [],
  "autoname": "field:item_code",
- "creation": "2023-10-01 10:00:00.000000",
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "item_details_section",
   "item_code",
   "item_name",
-  "description",
-  "item_image",
-  "barcodes",
-  "column_break_6",
   "item_category",
   "brand",
-  "item_type",
+  "column_break_6",
   "unit_of_measurement",
-  "country_of_origin",
+  "item_image",
   "disabled",
+  "description_section",
+  "description",
+  "barcodes",
+  "pricing_section",
+  "standard_rate",
+  "is_sales_item",
+  "column_break_pricing",
+  "valuation_rate",
+  "last_purchase_rate",
   "inventory_section",
-  "default_warehouse",
   "minimum_stock_level",
   "reorder_level",
   "column_break_14",
   "batch_tracking",
-  "expiry_date_tracking",
-  "sales_section",
-  "standard_rate",
-  "is_sales_item",
-  "valuation_section", 
-  "valuation_rate",
-  "last_purchase_rate"
+  "expiry_date_tracking"
  ],
  "fields": [
   {
    "fieldname": "item_details_section",
    "fieldtype": "Section Break",
-   "label": "Item Details"
+   "label": "Basic Information"
   },
   {
    "fieldname": "item_code",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Item Code",
    "reqd": 1,
    "unique": 1
@@ -47,8 +47,14 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Item Name",
    "reqd": 1
+  },
+  {
+   "fieldname": "description_section",
+   "fieldtype": "Section Break",
+   "label": "Description & Barcodes"
   },
   {
    "fieldname": "description",
@@ -73,6 +79,7 @@
   {
    "fieldname": "item_category",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Item Category",
    "options": "Item Category",
    "reqd": 1
@@ -84,23 +91,12 @@
    "options": "Brand"
   },
   {
-   "fieldname": "item_type",
-   "fieldtype": "Select",
-   "label": "Item Type",
-   "options": "Manufactured\nPurchased",
-   "reqd": 1
-  },
-  {
    "fieldname": "unit_of_measurement",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Unit of Measurement",
    "options": "UOM",
    "reqd": 1
-  },
-  {
-   "fieldname": "country_of_origin",
-   "fieldtype": "Data",
-   "label": "Country of Origin"
   },
   {
    "default": "0",
@@ -111,13 +107,7 @@
   {
    "fieldname": "inventory_section",
    "fieldtype": "Section Break",
-   "label": "Inventory"
-  },
-  {
-   "fieldname": "default_warehouse",
-   "fieldtype": "Link",
-   "label": "Default Warehouse",
-   "options": "Warehouse"
+   "label": "Inventory Management"
   },
   {
    "fieldname": "minimum_stock_level",
@@ -146,48 +136,51 @@
    "label": "Expiry Date Tracking"
   },
   {
-   "fieldname": "sales_section",
+   "fieldname": "pricing_section",
    "fieldtype": "Section Break",
-   "label": "Sales"
+   "label": "Pricing & Valuation"
   },
   {
    "fieldname": "standard_rate",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Standard Selling Rate",
    "options": "currency",
-   "precision": 2
+   "precision": "2"
   },
   {
    "default": "1",
    "fieldname": "is_sales_item",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Sales Item"
   },
   {
-   "fieldname": "valuation_section",
-   "fieldtype": "Section Break",
-   "label": "Valuation"
+   "fieldname": "column_break_pricing",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "valuation_rate",
    "fieldtype": "Currency",
    "label": "Valuation Rate",
    "options": "currency",
-   "precision": 2
+   "precision": "2"
   },
   {
    "fieldname": "last_purchase_rate",
    "fieldtype": "Currency",
    "label": "Last Purchase Rate",
    "options": "currency",
-   "precision": 2
+   "precision": "2"
   }
  ],
- "modified": "2023-10-01 10:00:00.000000",
+ "hide_toolbar": 1,
+ "links": [],
+ "modified": "2025-12-10 08:08:13.406029",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Item",
- "name_case": "Title Case",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -204,7 +197,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -224,9 +216,11 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "item_name,item_code,item_category,brand",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "item_name",
  "track_changes": 1
 }

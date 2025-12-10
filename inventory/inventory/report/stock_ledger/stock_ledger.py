@@ -65,7 +65,7 @@ def get_stock_ledger_data(filters):
             voucher_type,
             voucher_no
         FROM 
-            `tabStock Ledger Entry`
+            "tabStock Ledger Entry"
         {where_clause}
         ORDER BY 
             posting_date, posting_time, name

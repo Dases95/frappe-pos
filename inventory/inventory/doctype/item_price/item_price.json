@@ -1,6 +1,7 @@
 {
+ "actions": [],
  "autoname": "hash",
- "creation": "2023-10-01 10:00:00.000000",
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -9,14 +10,10 @@
   "selling",
   "enabled",
   "is_default_price",
-  "currency",
   "item_details_section",
   "item_code",
-  "item_name",
-  "uom",
   "column_break_1",
-  "brand_name",
-  "item_description",
+  "item_name",
   "party_section",
   "customer",
   "supplier",
@@ -37,15 +34,15 @@
    "default": "0",
    "fieldname": "buying",
    "fieldtype": "Check",
-   "label": "Buying",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "label": "Buying"
   },
   {
    "default": "0",
    "fieldname": "selling",
    "fieldtype": "Check",
-   "label": "Selling",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "label": "Selling"
   },
   {
    "default": "1",
@@ -55,18 +52,10 @@
   },
   {
    "default": "0",
+   "description": "If checked, this price will be used as the default when no supplier-specific price is found",
    "fieldname": "is_default_price",
    "fieldtype": "Check",
-   "label": "Default Price",
-   "description": "If checked, this price will be used as the default when no supplier-specific price is found"
-  },
-  {
-   "default": "INR",
-   "fieldname": "currency",
-   "fieldtype": "Link",
-   "label": "Currency",
-   "options": "Currency",
-   "reqd": 1
+   "label": "Default Price"
   },
   {
    "fieldname": "item_details_section",
@@ -89,30 +78,8 @@
    "read_only": 1
   },
   {
-   "fetch_from": "item_code.unit_of_measurement",
-   "fieldname": "uom",
-   "fieldtype": "Link",
-   "label": "UOM",
-   "options": "UOM",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "item_code.brand_name",
-   "fieldname": "brand_name",
-   "fieldtype": "Data",
-   "label": "Brand",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "item_code.description",
-   "fieldname": "item_description",
-   "fieldtype": "Text",
-   "label": "Description",
-   "read_only": 1
   },
   {
    "fieldname": "party_section",
@@ -166,7 +133,9 @@
    "label": "Valid Upto"
   }
  ],
- "modified": "2023-10-01 10:00:00.000000",
+ "hide_toolbar": 1,
+ "links": [],
+ "modified": "2025-10-04 09:58:55.485081",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Item Price",
@@ -186,7 +155,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -206,9 +174,11 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "item_code,customer,supplier,valid_from,valid_upto",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "item_name",
  "track_changes": 1
-} 
+}

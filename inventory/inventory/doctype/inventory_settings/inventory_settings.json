@@ -1,8 +1,27 @@
 {
- "creation": "2023-10-01 10:00:00.000000",
+ "actions": [],
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "company_details_section",
+  "company_name",
+  "legal_form",
+  "column_break_1",
+  "rc_number",
+  "nif_number",
+  "nis_number",
+  "column_break_2",
+  "article_imposition",
+  "capital_social",
+  "contact_details_section",
+  "company_address",
+  "column_break_3",
+  "company_phone",
+  "company_fax",
+  "column_break_4",
+  "company_email",
+  "company_website",
   "warehouses_section",
   "default_warehouse",
   "valuation_settings_section",
@@ -11,6 +30,106 @@
   "auto_create_batch"
  ],
  "fields": [
+  {
+   "fieldname": "company_details_section",
+   "fieldtype": "Section Break",
+   "label": "Company Details (Algeria Law)"
+  },
+  {
+   "description": "Legal company name as registered",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name (Raison Sociale)"
+  },
+  {
+   "description": "Legal form of the company",
+   "fieldname": "legal_form",
+   "fieldtype": "Select",
+   "label": "Legal Form (Forme Juridique)",
+   "options": "\nSARL (Soci\u00e9t\u00e9 \u00e0 Responsabilit\u00e9 Limit\u00e9e)\nEURL (Entreprise Unipersonnelle \u00e0 Responsabilit\u00e9 Limit\u00e9e)\nSPA (Soci\u00e9t\u00e9 Par Actions)\nSNC (Soci\u00e9t\u00e9 en Nom Collectif)\nSCS (Soci\u00e9t\u00e9 en Commandite Simple)\nEntreprise Individuelle\nAutre"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Commercial register number",
+   "fieldname": "rc_number",
+   "fieldtype": "Data",
+   "label": "RC Number (Registre de Commerce)"
+  },
+  {
+   "description": "Tax identification number",
+   "fieldname": "nif_number",
+   "fieldtype": "Data",
+   "label": "NIF (Num\u00e9ro d'Identification Fiscale)"
+  },
+  {
+   "description": "Statistical identification number",
+   "fieldname": "nis_number",
+   "fieldtype": "Data",
+   "label": "NIS (Num\u00e9ro d'Identification Statistique)"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Article of taxation",
+   "fieldname": "article_imposition",
+   "fieldtype": "Data",
+   "label": "Article d'Imposition"
+  },
+  {
+   "description": "Company capital in Algerian Dinar",
+   "fieldname": "capital_social",
+   "fieldtype": "Currency",
+   "label": "Capital Social (DZD)"
+  },
+  {
+   "fieldname": "contact_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Information"
+  },
+  {
+   "description": "Full company address including Wilaya",
+   "fieldname": "company_address",
+   "fieldtype": "Small Text",
+   "label": "Company Address (Adresse)"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Company phone number",
+   "fieldname": "company_phone",
+   "fieldtype": "Data",
+   "label": "Phone (T\u00e9l\u00e9phone)"
+  },
+  {
+   "description": "Company fax number",
+   "fieldname": "company_fax",
+   "fieldtype": "Data",
+   "label": "Fax"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Company email address",
+   "fieldname": "company_email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "description": "Company website URL",
+   "fieldname": "company_website",
+   "fieldtype": "Data",
+   "label": "Website"
+  },
   {
    "fieldname": "warehouses_section",
    "fieldtype": "Section Break",
@@ -44,12 +163,14 @@
   {
    "default": "0",
    "fieldname": "auto_create_batch",
-   "fieldtype": "Check", 
+   "fieldtype": "Check",
    "label": "Auto Create Batch for Receipt Entries"
   }
  ],
+ "hide_toolbar": 1,
  "issingle": 1,
- "modified": "2023-10-01 10:00:00.000000",
+ "links": [],
+ "modified": "2025-12-09 21:28:13.182163",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Inventory Settings",
@@ -57,7 +178,6 @@
  "permissions": [
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "print": 1,
    "read": 1,
@@ -67,7 +187,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "print": 1,
    "read": 1,
@@ -76,7 +195,9 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
-} 
+}

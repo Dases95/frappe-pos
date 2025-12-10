@@ -8,26 +8,33 @@
   "customer_details_section",
   "customer_name",
   "customer_type",
+  "column_break_1",
   "status",
-  "image",
+  "legal_information_section",
+  "rc_number",
+  "nif_number",
+  "column_break_legal",
+  "nis_number",
+  "article_imposition",
   "contact_section",
   "contact_person",
   "contact_number",
+  "column_break_contact",
   "email",
+  "mobile",
   "address_section",
   "wilaya",
   "commune",
+  "column_break_address",
   "address",
-  "full_address_display",
-  "customer_settings_section",
-  "payment_terms",
+  "notes_section",
   "notes"
  ],
  "fields": [
   {
    "fieldname": "customer_details_section",
    "fieldtype": "Section Break",
-   "label": "Customer Details"
+   "label": "Customer Information"
   },
   {
    "fieldname": "customer_name",
@@ -38,30 +45,62 @@
    "unique": 1
   },
   {
+   "default": "Individual",
    "fieldname": "customer_type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Customer Type",
-   "options": "Retailer\nWholesaler\nDistributor",
+   "options": "Individual\nCompany",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
   },
   {
    "default": "Active",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Active\nInactive"
+   "options": "Active\nInactive\nBlocked"
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Attach Image",
-   "label": "Image",
-   "print_hide": 1
+   "fieldname": "legal_information_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Information"
+  },
+  {
+   "description": "Commercial register number (for companies)",
+   "fieldname": "rc_number",
+   "fieldtype": "Data",
+   "label": "RC Number (Registre de Commerce)"
+  },
+  {
+   "description": "Tax identification number (for companies)",
+   "fieldname": "nif_number",
+   "fieldtype": "Data",
+   "label": "NIF (Numéro d'Identification Fiscale)"
+  },
+  {
+   "fieldname": "column_break_legal",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Statistical identification number (for companies)",
+   "fieldname": "nis_number",
+   "fieldtype": "Data",
+   "label": "NIS (Numéro d'Identification Statistique)"
+  },
+  {
+   "description": "Article of taxation (for companies)",
+   "fieldname": "article_imposition",
+   "fieldtype": "Data",
+   "label": "Article d'Imposition"
   },
   {
    "fieldname": "contact_section",
    "fieldtype": "Section Break",
-   "label": "Contact Details"
+   "label": "Contact Information"
   },
   {
    "fieldname": "contact_person",
@@ -74,55 +113,54 @@
    "fieldname": "contact_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Contact Number",
+   "label": "Phone Number",
    "reqd": 1
   },
   {
-   "description": "Enter a valid email address",
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email",
    "options": "Email"
   },
   {
-   "fieldname": "address_section",
-   "fieldtype": "Section Break",
-   "label": "Address Information"
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile"
   },
   {
-   "description": "Select the province/wilaya",
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address"
+  },
+  {
    "fieldname": "wilaya",
    "fieldtype": "Link",
    "label": "Wilaya",
    "options": "Wilaya"
   },
   {
-   "description": "Select the commune (filtered by selected wilaya)",
    "fieldname": "commune",
    "fieldtype": "Link",
    "label": "Commune",
    "options": "Commune"
   },
   {
+   "fieldname": "column_break_address",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "address",
    "fieldtype": "Small Text",
-   "label": "Street Address"
+   "label": "Address"
   },
   {
-   "fieldname": "full_address_display",
-   "fieldtype": "HTML",
-   "label": "Full Address",
-   "read_only": 1
-  },
-  {
-   "fieldname": "customer_settings_section",
+   "fieldname": "notes_section",
    "fieldtype": "Section Break",
-   "label": "Customer Settings"
-  },
-  {
-   "fieldname": "payment_terms",
-   "fieldtype": "Small Text",
-   "label": "Payment Terms"
+   "label": "Notes"
   },
   {
    "fieldname": "notes",
@@ -130,7 +168,7 @@
    "label": "Notes"
   }
  ],
- "image_field": "image",
+ "hide_toolbar": 1,
  "links": [],
  "modified": "2025-06-21 18:31:19.127193",
  "modified_by": "Administrator",
@@ -172,7 +210,7 @@
   }
  ],
  "row_format": "Dynamic",
- "search_fields": "customer_name,contact_person,email,wilaya,commune",
+ "search_fields": "customer_name,contact_person,contact_number,email,nif_number,rc_number,wilaya",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

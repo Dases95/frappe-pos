@@ -98,6 +98,10 @@ fixtures = [
     {
         "dt": "Report",
         "filters": [["report_name", "in", ["Customers by Region"]]]
+    },
+    {
+        "dt": "Print Format",
+        "filters": [["name", "in", ["Delivery Note Print"]]]
     }
 ]
 

@@ -1,16 +1,17 @@
 {
- "creation": "2023-10-01 10:00:00.000000",
+ "actions": [],
+ "creation": "2023-10-01 10:00:00",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "uom",
   "item_name",
   "quantity",
   "column_break_4",
   "rate",
   "amount",
-  "uom",
   "has_batch",
   "batch",
   "purchase_receipt",
@@ -61,11 +62,13 @@
    "fetch_from": "item.unit_of_measurement",
    "fieldname": "uom",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "UOM",
    "options": "UOM",
    "read_only": 1
   },
   {
+   "default": "0",
    "fetch_from": "item.batch_tracking",
    "fieldname": "has_batch",
    "fieldtype": "Check",
@@ -95,13 +98,16 @@
   }
  ],
  "istable": 1,
- "modified": "2023-10-01 10:00:00.000000",
+ "links": [],
+ "modified": "2025-12-09 21:18:32.046070",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Purchase Receipt Item",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
-} 
+}
