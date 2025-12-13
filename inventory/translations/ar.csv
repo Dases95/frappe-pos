@@ -180,7 +180,7 @@ Total Items,إجمالي الأصناف
 Totals,الإجماليات
 Transfer,تحويل
 UOM,وحدة القياس
-Unit of Measurement,وحدة القياس
+Unit of measurement,وحدة القياس
 Updated pricing for {0} items based on customer {1}:,تم تحديث أسعار {0} صنف بناءً على العميل {1}:
 Use last purchase rate + markup,استخدام آخر سعر شراء + هامش الربح
 Valid From,صالح من
@@ -440,4 +440,201 @@ Warning (Days),تحذير (أيام)
 Hide Good Status,إخفاء الحالة الجيدة
 Batches,الدفعات
 Good,جيد
-
+Supplier Directory,دليل الموردين
+Customer Sales Analysis,تحليل مبيعات العملاء
+Customers by Region,العملاء حسب المنطقة
+RC Number (Registre de Commerce),رقم السجل التجاري
+NIF (Numéro d'Identification Fiscale),رقم التعريف الجبائي
+NIS (Numéro d'Identification Statistique),رقم التعريف الإحصائي
+Article d'Imposition,مادة الضريبة
+Legal Information,المعلومات القانونية
+Customer Information,معلومات العميل
+Supplier Information,معلومات المورد
+Contact Information,معلومات الاتصال
+Phone Number,رقم الهاتف
+Mobile,الجوال
+Individual,فرد
+Company,شركة
+Blocked,محظور
+Inactive,غير نشط
+Active,نشط
+Manufacturer,مصنع
+Wholesaler,تاجر جملة
+Distributor,موزع
+Importer,مستورد
+Service Provider,مقدم خدمات
+Other,أخرى
+Notes,ملاحظات
+Address,العنوان
+Commune,البلدية
+Wilaya,الولاية
+Total Customers,إجمالي العملاء
+Active Customers,العملاء النشطون
+Inactive Customers,العملاء غير النشطين
+Wilayas Represented,الولايات الممثلة
+Communes Represented,البلديات الممثلة
+Most Common Type,النوع الأكثر شيوعاً
+Top 10 Wilayas by Customer Count and Type,أفضل 10 ولايات حسب عدد العملاء والنوع
+First Sale,أول عملية بيع
+Last Sale,آخر عملية بيع
+Sale Count,عدد المبيعات
+Total Sales,إجمالي المبيعات
+Total Quantity Sold,إجمالي الكمية المباعة
+Insufficient Stock,مخزون غير كافٍ
+Please check stock availability before creating this Delivery Note,يرجى التحقق من توفر المخزون قبل إنشاء إذن التسليم هذا
+Basic Information,المعلومات الأساسية
+Description & Barcodes,الوصف والباركود
+Pricing & Valuation,التسعير والتقييم
+Inventory Management,إدارة المخزون
+Minimum Stock Level,الحد الأدنى للمخزون
+Batch Tracking,تتبع الدفعات
+Standard Selling Rate,سعر البيع القياسي
+Is Sales Item,صنف للبيع
+Last Purchase Rate,آخر سعر شراء
+Item Category,تصنيف الصنف
+Item Image,صورة الصنف
+Barcodes,الباركودات
+Disabled,معطل
+Purchase,شراء
+Sale,بيع
+Receipt,استلام
+Issue,صرف
+Transfer,تحويل
+Manufacture,تصنيع
+Description & Barcodes,الوصف والباركود
+No.,رقم
+Add Row,إضافة صف
+add row,إضافة صف
+List View,عرض القائمة
+list view,عرض القائمة
+Distribution,توزيع
+Raw Materials,مواد خام
+Finished Goods,منتجات نهائية
+Warehouse Details,تفاصيل المستودع
+Warehouse Details Section,قسم تفاصيل المستودع
+Warehouse Name,اسم المستودع
+Warehouse Code,رمز المستودع
+Warehouse Type,نوع المستودع
+Is Active,نشط
+Supplier Details,تفاصيل المورد
+Supplier Details Section,قسم تفاصيل المورد
+Supplier Name (Raison Sociale),اسم المورد (الاسم التجاري)
+Supplier Type,نوع المورد
+Status,الحالة
+Contact Person,شخص الاتصال
+Phone Number,رقم الهاتف
+Email,البريد الإلكتروني
+Mobile,الجوال
+Address,العنوان
+Notes,ملاحظات
+Customer Details,تفاصيل العميل
+Customer Details Section,قسم تفاصيل العميل
+Customer Name,اسم العميل
+Customer Type,نوع العميل
+Contact Person,شخص الاتصال
+Phone Number,رقم الهاتف
+Email,البريد الإلكتروني
+Mobile,الجوال
+Address,العنوان
+UOM,وحدة القياس
+UOM Name,اسم وحدة القياس
+UOM Abbreviation,اختصار وحدة القياس
+Must be Whole Number,يجب أن يكون عدداً صحيحاً
+Category Name,اسم التصنيف
+Category Details,تفاصيل التصنيف
+Category Details Section,قسم تفاصيل التصنيف
+Parent Category,التصنيف الرئيسي
+Item Details,تفاصيل الصنف
+Item Details Section,قسم تفاصيل الصنف
+Item Code,كود الصنف
+Item Name,اسم الصنف
+Description,الوصف
+Brand,العلامة التجارية
+Inventory,المخزون
+Inventory Section,قسم المخزون
+Minimum Stock Level,الحد الأدنى للمخزون
+Reorder Level,مستوى إعادة الطلب
+Batch Tracking,تتبع الدفعات
+Expiry Date Tracking,تتبع تاريخ الصلاحية
+Sales,المبيعات
+Sales Section,قسم المبيعات
+Valuation,التقييم
+Valuation Section,قسم التقييم
+Valuation Rate,معدل التقييم
+Column Break,فاصل عمود
+Section Break,فاصل قسم
+Retailer,تاجر تجزئة
+Actions,الإجراءات
+Links,الروابط
+Permissions,الصلاحيات
+Search Fields,حقول البحث
+Sort Field,حقل الترتيب
+Sort Order,ترتيب الفرز
+Title Field,حقل العنوان
+Track Changes,تتبع التغييرات
+Quick Entry,إدخال سريع
+Allow Rename,السماح بإعادة التسمية
+Naming Rule,قاعدة التسمية
+By fieldname,حسب اسم الحقل
+Field Order,ترتيب الحقول
+Fields,الحقول
+System Manager,مدير النظام
+Inventory Manager,مدير المخزون
+Inventory User,مستخدم المخزون
+Create,إنشاء
+Read,قراءة
+Write,كتابة
+Delete,حذف
+Report,تقرير
+Export,تصدير
+Print,طباعة
+Share,مشاركة
+Submit,اعتماد
+Cancel,إلغاء
+Amend,تعديل
+UOM Name,اسم وحدة القياس
+UOM Abbreviation,اختصار وحدة القياس
+Description,الوصف
+Supplier Directory,دليل الموردين
+Customer Sales Analysis,تحليل مبيعات العملاء
+Supplier Name,اسم المورد
+Contact Person,شخص الاتصال
+Phone Number,رقم الهاتف
+Mobile,الجوال
+Email,البريد الإلكتروني
+Wilaya,الولاية
+Commune,البلدية
+NIF,الرقم التعريفي الجبائي
+RC Number,رقم السجل التجاري
+Status,الحالة
+From Date,من تاريخ
+To Date,إلى تاريخ
+Customer,العميل
+Customer Name,اسم العميل
+Customer Type,نوع العميل
+Item,الصنف
+Item Name,اسم الصنف
+Qty Sold,الكمية المباعة
+Total Amount,المبلغ الإجمالي
+Avg Rate,متوسط السعر
+Last Sale,آخر عملية بيع
+Sale Count,عدد المبيعات
+Total Items,إجمالي الأصناف
+Avg Order Value,متوسط قيمة الطلب
+First Sale,أول عملية بيع
+Group By,تجميع حسب
+Sales Amount,مبلغ المبيعات
+Total Customers,إجمالي العملاء
+Total Sales,إجمالي المبيعات
+Total Quantity Sold,إجمالي الكمية المباعة
+Active,نشط
+Inactive,غير نشط
+Blocked,محظور
+Manufacturer,مصنع
+Wholesaler,تاجر جملة
+Distributor,موزع
+Importer,مستورد
+Service Provider,مقدم خدمات
+Other,أخرى
+Individual,فرد
+Company,شركة

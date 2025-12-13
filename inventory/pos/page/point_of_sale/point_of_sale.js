@@ -5,1776 +5,1586 @@ frappe.pages['point-of-sale'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
-	// Create the POS application
-	new POSApp(page);
+	// Load Vue and Vuetify from CDN, then initialize the app
+	loadVuetifyDependencies().then(() => {
+		new POSApp(page);
+	});
 };
+
+async function loadVuetifyDependencies() {
+	// Load Vue 3
+	if (!window.Vue) {
+		await loadScript('https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js');
+	}
+	
+	// Load Vuetify CSS (scoped version) - only if not already loaded
+	if (!document.getElementById('pos-vuetify-css')) {
+		const vuetifyCSS = document.createElement('link');
+		vuetifyCSS.id = 'pos-vuetify-css';
+		vuetifyCSS.rel = 'stylesheet';
+		vuetifyCSS.href = 'https://unpkg.com/vuetify@3.5.1/dist/vuetify.min.css';
+		document.head.appendChild(vuetifyCSS);
+	}
+	
+	// Load Material Design Icons - only if not already loaded
+	if (!document.getElementById('pos-mdi-css')) {
+		const mdiCSS = document.createElement('link');
+		mdiCSS.id = 'pos-mdi-css';
+		mdiCSS.rel = 'stylesheet';
+		mdiCSS.href = 'https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css';
+		document.head.appendChild(mdiCSS);
+	}
+	
+	// Load Vuetify JS
+	if (!window.Vuetify) {
+		await loadScript('https://unpkg.com/vuetify@3.5.1/dist/vuetify.min.js');
+	}
+	
+	// Enable Vuetify CSS
+	enablePOSStyles();
+	
+	// Small delay to ensure everything is loaded
+	await new Promise(resolve => setTimeout(resolve, 100));
+}
+
+function loadScript(src) {
+	return new Promise((resolve, reject) => {
+		const script = document.createElement('script');
+		script.src = src;
+		script.onload = resolve;
+		script.onerror = reject;
+		document.head.appendChild(script);
+	});
+}
+
+function enablePOSStyles() {
+	const vuetifyCSS = document.getElementById('pos-vuetify-css');
+	const mdiCSS = document.getElementById('pos-mdi-css');
+	if (vuetifyCSS) vuetifyCSS.disabled = false;
+	if (mdiCSS) mdiCSS.disabled = false;
+}
+
+function disablePOSStyles() {
+	const vuetifyCSS = document.getElementById('pos-vuetify-css');
+	const mdiCSS = document.getElementById('pos-mdi-css');
+	if (vuetifyCSS) vuetifyCSS.disabled = true;
+	if (mdiCSS) mdiCSS.disabled = true;
+}
 
 // Cleanup when leaving the page
 frappe.pages['point-of-sale'].on_page_unload = function() {
-	// Remove POS page class from body
 	document.body.classList.remove('pos-page');
+	disablePOSStyles();
 };
+
+// Also listen to Frappe route changes for cleanup
+$(document).on('page-change', function() {
+	if (!frappe.get_route_str().includes('point-of-sale')) {
+		document.body.classList.remove('pos-page');
+		disablePOSStyles();
+	}
+});
+
+// Cleanup on hashchange as backup
+window.addEventListener('hashchange', function() {
+	if (!window.location.hash.includes('point-of-sale')) {
+		document.body.classList.remove('pos-page');
+		disablePOSStyles();
+	}
+});
 
 class POSApp {
 	constructor(page) {
 		this.page = page;
 		this.wrapper = page.main;
-		this.language = frappe.boot.lang || 'en';
-		this.currentSession = null;
-		this.posProfiles = [];
-		this.products = [];
-		this.cart = [];
-		this.paymentMethods = [];
-		this.selectedPaymentMethod = 'Cash';
-		this.paidAmount = 0;
-		this.productSearch = '';
-		this.selectedCustomer = null;
-		this.selectedPOSClient = null;
-		this.posClients = [];
-		
-		this.setup_page();
-		this.load_initial_data();
-	}
-
-	setup_page() {
-		// Set up the main interface
-		this.render_interface();
-		this.bind_events();
-	}
-
-	render_interface() {
-		// Add Tailwind CSS (scoped to POS only)
-		if (!document.querySelector('link[href*="tailwindcss"]')) {
-			const tailwindCSS = document.createElement('link');
-			tailwindCSS.rel = 'stylesheet';
-			tailwindCSS.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
-			document.head.appendChild(tailwindCSS);
-		}
-
-		// Add POS page class to body for scoping
 		document.body.classList.add('pos-page');
-		
-		const html = `
-			<div class="pos-tailwind-container max-w-full p-6">
-				<!-- Header -->
-				<div class="bg-blue-600 text-white rounded-lg p-4 mb-4">
-					<div class="flex justify-between items-center">
-						<div class="flex-1">
-							<h3 class="text-xl font-bold m-0">${__('Point of Sale')}</h3>
-						</div>
-						<div class="flex items-center space-x-2">
-							<button class="bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm hover:bg-gray-300" id="toggle-language">
-								${this.language === 'ar' ? 'English' : 'العربية'}
-							</button>
-							<span id="session-indicator" class="bg-green-500 text-white px-2 py-1 rounded text-sm ml-2" style="display: none;">
-								${__('Session')}: <span id="session-name"></span>
-							</span>
-						</div>
-					</div>
-				</div>
+		enablePOSStyles();
+		this.initVueApp();
+	}
 
-				<!-- Session Start Modal -->
-				<div id="session-start-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-						<button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" type="button" onclick="document.getElementById('session-start-modal').style.display='none'">
-							<span class="text-xl">&times;</span>
-						</button>
-						<div class="bg-white">
-							<div class="border-b pb-4 mb-4">
-								<h3 class="text-lg font-semibold">${__('Start POS Session')}</h3>
-							</div>
-							<div>
-								<form id="start-session-form" class="space-y-4">
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-1">${__('POS Profile')}</label>
-										<div>
-											<select id="pos-profile-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-												<option value="">${__('Select POS Profile')}</option>
-											</select>
-										</div>
-									</div>
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-1">${__('Opening Amount')} (${__('DZD')})</label>
-										<div>
-											<input id="opening-amount" type="number" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="0" value="0">
-										</div>
-									</div>
-									<button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-										${__('Start Session')}
-									</button>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
+	initVueApp() {
+		const { createApp, ref, computed, reactive, onMounted, watch } = Vue;
+		const { createVuetify } = Vuetify;
 
-				<!-- Main POS Interface -->
-				<div id="pos-interface" class="py-4" style="display: none;">
-					<div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-					<!-- Products Section -->
-				<div class="lg:col-span-3">
-						<!-- Products Grid -->
-						<div class="bg-white border border-gray-200 rounded-lg mb-4">
-							<div class="border-b border-gray-200 p-4">
-								<div class="flex items-center gap-4">
-									<div class="flex-shrink-0">
-										<h3 class="text-lg font-semibold text-gray-900 m-0">${__('Products')}</h3>
-									</div>
-									<div class="flex-1">
-										<input id="product-search" type="text" placeholder="${__('Search by name, code, or barcode...')}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-									</div>
-									<div class="flex-shrink-0 flex gap-2">
-								<button id="refresh-prices" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-md text-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500" title="${__('Refresh Prices')}">
-									💰
-								</button>
-								<button id="refresh-stock" class="bg-blue-100 text-blue-700 px-3 py-2 rounded-md text-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500" title="${__('Refresh Stock')}">
-									📦
-								</button>
-							</div>
-								</div>
-							</div>
-							<div class="p-4" style="max-height: 500px; overflow-y: auto;">
-								<div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-									<!-- Products will be loaded here -->
-								</div>
-							</div>
-						</div>
+		const vuetify = createVuetify({
+			theme: {
+				defaultTheme: 'posTheme',
+				themes: {
+					posTheme: {
+						dark: false,
+						colors: {
+							primary: '#1565C0',
+							secondary: '#424242',
+							accent: '#00ACC1',
+							error: '#D32F2F',
+							warning: '#FFA000',
+							info: '#1976D2',
+							success: '#388E3C',
+							surface: '#FAFAFA',
+							background: '#F5F5F5',
+						}
+					}
+				}
+			}
+		});
 
-						<!-- Shortcuts Section -->
-						<div class="bg-white border border-gray-200 rounded-lg">
-							<div class="border-b border-gray-200 p-4">
-								<h3 class="text-lg font-semibold text-gray-900 m-0">${__('Quick Shortcuts')}</h3>
-							</div>
-							<div class="p-4">
-								<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-									<!-- Function Shortcuts -->
-									<div>
-										<h4 class="text-gray-600 text-sm font-medium mb-2">${__('Functions')}</h4>
-										<div id="function-shortcuts" class="space-y-2">
-											<!-- Function shortcuts will be loaded here -->
-										</div>
-									</div>
-									<!-- Payment Shortcuts -->
-									<div>
-										<h4 class="text-gray-600 text-sm font-medium mb-2">${__('Payments')}</h4>
-										<div id="payment-shortcuts" class="space-y-2">
-											<!-- Payment shortcuts will be loaded here -->
-										</div>
-									</div>
-									<!-- Product Shortcuts -->
-									<div>
-										<h4 class="text-gray-600 text-sm font-medium mb-2">${__('Products')}</h4>
-										<div id="product-shortcuts" class="space-y-2">
-											<!-- Product shortcuts will be loaded here -->
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+		const appTemplate = `
+<v-app>
+	<v-main class="pos-main">
+		<!-- Session Start Dialog -->
+		<v-dialog v-model="showSessionDialog" persistent max-width="500" class="session-dialog">
+			<v-card class="session-card elevation-12">
+				<v-card-title class="text-h5 primary white--text pa-6" style="background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);">
+					<v-icon class="mr-3" color="white">mdi-store</v-icon>
+					<span style="color: white;">{{ __('Start POS Session') }}</span>
+				</v-card-title>
+				<v-card-text class="pa-6">
+					<v-form @submit.prevent="startSession">
+						<v-select
+							v-model="selectedProfile"
+							:items="posProfiles"
+							item-title="profile_name"
+							item-value="name"
+							:label="__('POS Profile')"
+							variant="outlined"
+							prepend-inner-icon="mdi-account-tie"
+							class="mb-4"
+							:rules="[v => !!v || __('Please select a POS Profile')]"
+							required
+						></v-select>
+						<v-text-field
+							v-model.number="openingAmount"
+							:label="__('Opening Amount (DZD)')"
+							type="number"
+							variant="outlined"
+							prepend-inner-icon="mdi-cash"
+							min="0"
+							step="0.01"
+						></v-text-field>
+					</v-form>
+				</v-card-text>
+				<v-card-actions class="pa-6 pt-0">
+					<v-spacer></v-spacer>
+					<v-btn
+						color="primary"
+						size="large"
+						variant="elevated"
+						@click="startSession"
+						:loading="loading"
+						block
+					>
+						<v-icon left class="mr-2">mdi-play-circle</v-icon>
+						{{ __('Start Session') }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 
-						<!-- Cart and Payment Section -->
-						<div class="lg:col-span-2">
-							<!-- Cart -->
-							<div class="bg-white border border-gray-200 rounded-lg mb-4">
-								<div class="border-b border-gray-200 p-4">
-									<div class="flex items-center justify-between">
-										<div>
-											<h3 class="text-lg font-semibold text-gray-900 m-0">${__('Cart')}</h3>
-										</div>
-										<div class="flex-1 ml-4">
-								<div class="relative">
-									<input id="customer-search" type="text" placeholder="${__('Search customer or use Walk-in Customer...')}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${__('Walk-in Customer')}">
-									<div id="customer-dropdown" class="absolute w-full" style="display: none; position: absolute; z-index: 1000; background: white; border: 1px solid #e5e5e5; max-height: 200px; overflow-y: auto; border-radius: 6px; margin-top: 2px;">
-										<!-- Customer search results will appear here -->
-									</div>
-								</div>
-							</div>
-									</div>
-								</div>
-								<div class="p-4" style="max-height: 400px; overflow-y: auto; min-height: 250px;">
-									<div id="cart-items">
-										<!-- Cart items will be loaded here -->
-									</div>
-								</div>
-								<div class="border-t border-gray-200 p-4">
-									<div class="flex items-center justify-between">
-										<div><strong>${__('Total')}:</strong></div>
-										<div>
-											<strong id="cart-total" class="text-lg text-blue-600">0.00 ${__('DZD')}</strong>
-										</div>
-									</div>
-								</div>
-							</div>
+		<!-- Main POS Interface -->
+		<v-container fluid v-if="currentSession" class="pos-container pa-4">
+			<!-- Header -->
+			<v-card class="mb-4 header-card" elevation="4">
+				<v-toolbar color="primary" dark dense>
+					<v-icon class="mr-3">mdi-point-of-sale</v-icon>
+					<v-toolbar-title class="font-weight-bold">{{ __('Point of Sale') }}</v-toolbar-title>
+					<v-spacer></v-spacer>
+					<v-chip color="success" class="mr-3" variant="elevated">
+						<v-icon start size="small">mdi-check-circle</v-icon>
+						{{ currentSession.name }}
+					</v-chip>
+					<v-btn 
+						color="white" 
+						variant="outlined" 
+						size="small" 
+						class="mr-2"
+						@click="showInvoiceModal = true"
+					>
+						<v-icon start size="small">mdi-history</v-icon>
+						{{ __('Previous Invoices') }}
+					</v-btn>
+					<v-btn icon variant="text" @click="closeSession" :title="__('Close Session')">
+						<v-icon>mdi-power</v-icon>
+					</v-btn>
+				</v-toolbar>
+			</v-card>
 
-							<!-- Payment -->
-							<div class="bg-white border border-gray-200 rounded-lg">
-								<div class="border-b border-gray-200 p-4">
-									<h3 class="text-lg font-semibold text-gray-900 m-0">${__('Payment')}</h3>
-								</div>
-								<div class="p-4 space-y-4">
-									<!-- POS Client Selection -->
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-1">${__('POS Client')}</label>
-										<div class="relative">
-											<input id="pos-client-search" type="text" placeholder="${__('Search client by name...')}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-											<div id="pos-client-dropdown" class="absolute w-full" style="display: none; position: absolute; z-index: 1000; background: white; border: 1px solid #e5e5e5; max-height: 200px; overflow-y: auto; border-radius: 6px; margin-top: 2px;">
-												<!-- Client search results will appear here -->
+			<v-row>
+				<!-- Products Section -->
+				<v-col cols="12" lg="7">
+					<v-card class="products-card" elevation="3">
+						<v-card-title class="d-flex align-center pa-4 products-header">
+							<v-icon class="mr-2" color="primary">mdi-package-variant</v-icon>
+							<span class="text-h6">{{ __('Products') }}</span>
+							<v-spacer></v-spacer>
+							<v-text-field
+								v-model="productSearch"
+								:placeholder="__('Search products...')"
+								prepend-inner-icon="mdi-magnify"
+								variant="outlined"
+								density="compact"
+								hide-details
+								clearable
+								style="max-width: 300px;"
+								class="search-field"
+							></v-text-field>
+							<v-btn icon variant="text" color="primary" @click="refreshStock" :loading="refreshingStock" class="ml-2">
+								<v-icon>mdi-refresh</v-icon>
+							</v-btn>
+						</v-card-title>
+						<v-divider></v-divider>
+						<v-card-text class="products-grid-container pa-4" style="max-height: 500px; overflow-y: auto;">
+							<v-row dense>
+								<v-col v-for="product in filteredProducts" :key="product.item_code" cols="6" sm="4" md="3">
+									<v-card
+										:class="['product-card', { 'out-of-stock': product.available_qty <= 0 }]"
+										@click="addToCart(product)"
+										:disabled="product.available_qty <= 0"
+										elevation="2"
+										hover
+									>
+										<v-card-text class="pa-3 text-center position-relative">
+											<!-- Info Button - click.stop prevents adding to cart -->
+											<v-btn
+												icon
+												size="x-small"
+												variant="text"
+												color="primary"
+												class="product-info-btn"
+												@click.stop="showProductDetails(product)"
+												:title="__('View Details')"
+											>
+												<v-icon size="small">mdi-information-outline</v-icon>
+											</v-btn>
+											
+											<div class="product-icon mb-2">
+												<v-icon size="40" :color="product.available_qty > 0 ? 'primary' : 'grey'">mdi-cube-outline</v-icon>
 											</div>
-										</div>
-									</div>
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-1">${__('Payment Method')}</label>
-										<div>
-											<select id="payment-method" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-												<option value="Cash">${__('Cash')}</option>
-												<option value="Card">${__('Card')}</option>
-												<option value="Bank Transfer">${__('Bank Transfer')}</option>
-												<option value="Credit">${__('Credit')}</option>
-											</select>
-										</div>
-									</div>
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-1">${__('Amount Paid')} (${__('DZD')})</label>
-										<div>
-											<input id="paid-amount" type="number" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="0">
-										</div>
-									</div>
-									<div id="change-display" class="bg-green-50 border border-green-200 rounded-md p-3" style="display: none;">
-										<p class="text-sm text-green-800 m-0"><strong>${__('Change')}: <span id="change-amount">0.00 ${__('DZD')}</span></strong></p>
-									</div>
-									<button id="complete-sale" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
-										${__('Complete Sale')}
-									</button>
-									<button id="clear-cart" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 mt-2">
-									${__('Clear Cart')}
-								</button>
-								<button id="modify-invoice" class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 mt-2">
-										${__('Modify Existing Sale')}
-									</button>
-								</div>
+											<div class="product-name text-body-2 font-weight-medium text-truncate" :title="product.item_name">
+												{{ product.item_name }}
+											</div>
+											<div class="product-code text-caption text-grey text-truncate">{{ product.item_code }}</div>
+											<div class="product-price text-h6 font-weight-bold mt-2" :class="product.standard_rate > 0 ? 'text-primary' : 'text-grey'">
+												{{ product.standard_rate > 0 ? formatCurrency(product.standard_rate) : __('No Price') }}
+											</div>
+											<v-chip
+												:color="getStockColor(product.available_qty)"
+												size="x-small"
+												class="mt-2"
+												variant="tonal"
+											>
+												{{ __('Stock') }}: {{ product.available_qty || 0 }}
+											</v-chip>
+										</v-card-text>
+									</v-card>
+								</v-col>
+							</v-row>
+							<div v-if="filteredProducts.length === 0" class="text-center pa-8">
+								<v-icon size="64" color="grey-lighten-1">mdi-package-variant-remove</v-icon>
+								<div class="text-h6 text-grey mt-4">{{ __('No products found') }}</div>
 							</div>
-						</div>
-					</div>
-
-					<!-- Session Controls -->
-					<div class="text-center mt-6">
-						<button id="close-session" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-							${__('Close Session')}
-						</button>
-					</div>
-				</div>
-
-				<!-- Invoice Selection Modal -->
-				<div id="invoice-selection-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-					<div class="bg-white rounded-lg w-full max-w-4xl mx-4 max-h-screen overflow-hidden">
-						<button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" type="button" onclick="document.getElementById('invoice-selection-modal').style.display='none'">
-							<span class="text-xl">&times;</span>
-						</button>
-						<div class="bg-white">
-							<div class="border-b pb-4 mb-4 p-6">
-								<h3 class="text-lg font-semibold">${__('Select Invoice to Modify')}</h3>
-							</div>
-							<div class="p-6">
-								<div class="mb-4">
-									<input id="invoice-search" type="text" placeholder="${__('Search by invoice number or customer...')}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
-								</div>
-								<div id="invoice-list" style="max-height: 400px; overflow-y: auto;">
-									<!-- Invoice list will be loaded here -->
-								</div>
-							</div>
-							<div class="border-t pt-4 p-6">
-								<button type="button" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" onclick="document.getElementById('invoice-selection-modal').style.display='none'">${__('Cancel')}</button>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Receipt Modal -->
-				<div id="receipt-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-					<div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-						<button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700" type="button" onclick="document.getElementById('receipt-modal').style.display='none'">
-							<span class="text-xl">&times;</span>
-						</button>
-						<div class="bg-white">
-							<div class="border-b pb-4 mb-4">
-								<h3 class="text-lg font-semibold">${__('Sales Receipt')}</h3>
-							</div>
-							<div class="mb-4">
-								<div id="receipt-content">
-									<!-- Receipt content will be generated here -->
-								</div>
-							</div>
-							<div class="border-t pt-4">
-								<button id="print-receipt" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2">${__('Print')}</button>
-								<button type="button" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" onclick="document.getElementById('receipt-modal').style.display='none'">${__('Close')}</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		`;
-
-		$(this.wrapper).html(html);
-	}
-
-	bind_events() {
-		const self = this;
-
-		// Toggle language
-		$('#toggle-language').on('click', function() {
-			self.toggle_language();
-		});
-
-		// Start session form
-		$('#start-session-form').on('submit', function(e) {
-			e.preventDefault();
-			self.start_session();
-		});
-
-		// Product search
-		$('#product-search').on('input', function() {
-			self.productSearch = $(this).val();
-			self.render_products();
-		});
-
-		// Customer search
-		$('#customer-search').on('input', function() {
-			const query = $(this).val();
-			if (query.length >= 2 && query !== __('Walk-in Customer')) {
-				self.search_customers(query);
-			} else {
-				$('#customer-dropdown').hide();
-			}
-		});
-
-		// Hide dropdowns when clicking outside
-		$(document).on('click', function(e) {
-			if (!$(e.target).closest('#customer-search, #customer-dropdown').length) {
-				$('#customer-dropdown').hide();
-			}
-			if (!$(e.target).closest('#pos-client-search, #pos-client-dropdown').length) {
-				$('#pos-client-dropdown').hide();
-			}
-		});
-
-		// POS Client search
-		$('#pos-client-search').on('input', function() {
-			const query = $(this).val();
-			if (query.length >= 2) {
-				self.search_pos_clients(query);
-			} else {
-				$('#pos-client-dropdown').hide();
-			}
-		});
-
-		// Payment amount input
-		$('#paid-amount').on('input', function() {
-			self.paidAmount = parseFloat($(this).val()) || 0;
-			self.update_change_display();
-			self.update_complete_sale_button();
-		});
-
-		// Complete sale
-		$('#complete-sale').on('click', function() {
-			self.complete_sale();
-		});
-
-		// Clear cart
-		$('#clear-cart').on('click', function() {
-			self.clear_cart();
-		});
-
-		// Close session
-		$('#close-session').on('click', function() {
-			self.close_session();
-		});
-
-		// Print receipt
-		$('#print-receipt').on('click', function() {
-			self.print_receipt();
-		});
-
-		// Refresh prices
-		$('#refresh-prices').on('click', function() {
-			self.refresh_product_prices();
-		});
-
-		// Refresh stock
-		$('#refresh-stock').on('click', function() {
-			self.refresh_product_stock(true);
-		});
-
-		// Customer selection
-		$('#customer-select').on('change', function() {
-			self.selectedCustomer = $(this).val() || null;
-			self.refresh_product_prices(); // Refresh prices when customer changes
-		});
-
-		// Payment method selection
-		$('#payment-method').on('change', function() {
-			self.selectedPaymentMethod = $(this).val();
-			self.handle_payment_method_change();
-		});
-
-		// POS Client search
-		$('#pos-client-search').on('input', function() {
-			self.search_pos_clients($(this).val());
-		});
-
-		// Hide client dropdown when clicking outside
-		$(document).on('click', function(e) {
-			if (!$(e.target).closest('#pos-client-search, #pos-client-dropdown').length) {
-				$('#pos-client-dropdown').hide();
-			}
-		});
-
-		// Modify invoice
-		$('#modify-invoice').on('click', function() {
-			self.show_invoice_selection_modal();
-		});
-
-		// Invoice search
-		$('#invoice-search').on('input', function() {
-			self.filter_invoice_list($(this).val());
-		});
-	}
-
-	async load_initial_data() {
-		try {
-			// Load POS profiles
-			const profiles = await frappe.call({
-				method: 'frappe.client.get_list',
-				args: {
-					doctype: 'POS Profile',
-					fields: ['name', 'profile_name', 'currency', 'company_name', 'warehouse_name'],
-					limit_page_length: 0
-				}
-			});
-
-			this.posProfiles = profiles.message || [];
-			this.populate_pos_profiles();
-
-			// Check for existing open session
-			await this.check_existing_session();
-
-		} catch (error) {
-			frappe.msgprint(__('Error loading initial data: ') + error.message);
-		}
-	}
-
-	populate_pos_profiles() {
-		const select = $('#pos-profile-select');
-		select.empty().append('<option value="">' + __('Select POS Profile') + '</option>');
-		
-		this.posProfiles.forEach(profile => {
-			select.append(`<option value="${profile.name}">${profile.profile_name}</option>`);
-		});
-	}
-
-	async check_existing_session() {
-		try {
-			const response = await frappe.call({
-				method: 'frappe.client.get_list',
-				args: {
-					doctype: 'POS Session',
-					fields: ['name', 'pos_profile', 'status'],
-					filters: [
-						['user', '=', frappe.session.user],
-						['status', '=', 'Open']
-					],
-					limit_page_length: 1
-				}
-			});
-
-			if (response.message && response.message.length > 0) {
-				this.currentSession = response.message[0];
-				this.show_pos_interface();
-				await this.load_pos_data();
-			}
-		} catch (error) {
-			console.error('Error checking existing session:', error);
-		}
-	}
-
-	async start_session() {
-		const profileName = $('#pos-profile-select').val();
-		const openingAmount = parseFloat($('#opening-amount').val()) || 0;
-
-		if (!profileName) {
-			frappe.msgprint(__('Please select a POS Profile'));
-			return;
-		}
-
-		try {
-			const response = await frappe.call({
-				method: 'inventory.pos.doctype.pos_session.pos_session.create_opening_entry',
-				args: {
-					pos_profile: profileName,
-					opening_amount: openingAmount
-				}
-			});
-
-			if (response.message) {
-				this.currentSession = response.message;
-				this.show_toast(__('Session started successfully!'), 'success');
-				this.show_pos_interface();
-				await this.load_pos_data();
-			}
-		} catch (error) {
-			this.show_toast(__('Error starting session: ') + error.message, 'error');
-		}
-	}
-
-	show_pos_interface() {
-		// Hide session modal
-		document.getElementById('session-start-modal').style.display = 'none';
-		$('#pos-interface').show();
-		$('#session-indicator').show();
-		$('#session-name').text(this.currentSession.name);
-		
-		// Set payment method to default (Cash)
-		$('#payment-method').val(this.selectedPaymentMethod);
-	}
-
-	async load_pos_data() {
-		try {
-			// Get current warehouse from session
-			const warehouse = this.currentSession?.warehouse || null;
-			
-			// Load products with stock information using the dedicated POS API
-			const products = await frappe.call({
-				method: 'inventory.pos.api.get_pos_items',
-				args: {
-					warehouse: warehouse,
-					search_term: ''
-				}
-			});
-
-			// Map the products to include available_qty from stock_qty
-			this.products = (products.message || []).map(item => ({
-				...item,
-				available_qty: item.stock_qty || 0
-			}));
-
-			this.render_products();
-
-		} catch (error) {
-			frappe.msgprint(__('Error loading products: ') + error.message);
-		}
-		
-		// Load customers
-		await this.load_customers();
-		
-		// Load POS clients
-		await this.load_pos_clients();
-		
-		// Load shortcuts
-		await this.load_shortcuts();
-	}
-
-	async load_customers() {
-		// This method is no longer needed as we use search-based customer selection
-		// Keeping it for backward compatibility but it doesn't populate any dropdown
-	}
-
-	async search_customers(query, page = 1) {
-		if (!query || query.length < 2) {
-			$('#customer-dropdown').hide();
-			return;
-		}
-
-		try {
-			const response = await frappe.call({
-				method: 'inventory.pos.api.search_customers',
-				args: {
-					search_term: query
-				}
-			});
-
-			const allCustomers = response.message || [];
-			this.currentCustomerSearch = {
-				query: query,
-				allResults: allCustomers,
-				currentPage: page,
-				itemsPerPage: 5
-			};
-			this.render_customer_dropdown();
-		} catch (error) {
-			console.error('Error searching customers:', error);
-			$('#customer-dropdown').hide();
-		}
-	}
-
-	render_customer_dropdown() {
-		const dropdown = $('#customer-dropdown');
-		dropdown.empty();
-
-		if (!this.currentCustomerSearch || this.currentCustomerSearch.allResults.length === 0) {
-			dropdown.append('<div class="p-3 text-gray-500">' + __('No customers found') + '</div>');
-			dropdown.show();
-			return;
-		}
-
-		const { allResults, currentPage, itemsPerPage } = this.currentCustomerSearch;
-		const totalPages = Math.ceil(allResults.length / itemsPerPage);
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		const currentPageResults = allResults.slice(startIndex, endIndex);
-
-		// Add pagination header
-		const header = $(`
-			<div class="p-2 bg-gray-50 border-b border-gray-200 flex justify-between items-center text-sm">
-				<span class="text-gray-600">${__('Page')} ${currentPage} ${__('of')} ${totalPages} (${allResults.length} ${__('total')})</span>
-				<div class="flex gap-1">
-					<button class="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" id="customer-prev-page" ${currentPage === 1 ? 'disabled' : ''}>
-						<i class="fa fa-chevron-left"></i>
-					</button>
-					<button class="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" id="customer-next-page" ${currentPage === totalPages ? 'disabled' : ''}>
-						<i class="fa fa-chevron-right"></i>
-					</button>
-				</div>
-			</div>
-		`);
-		dropdown.append(header);
-
-		// Add pagination event handlers
-		header.find('#customer-prev-page').on('click', (e) => {
-			e.preventDefault();
-			if (currentPage > 1) {
-				this.search_customers(this.currentCustomerSearch.query, currentPage - 1);
-			}
-		});
-
-		header.find('#customer-next-page').on('click', (e) => {
-			e.preventDefault();
-			if (currentPage < totalPages) {
-				this.search_customers(this.currentCustomerSearch.query, currentPage + 1);
-			}
-		});
-
-		// Add current page results
-		currentPageResults.forEach(customer => {
-			const item = $(`
-				<div class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100" data-customer="${customer.name}">
-					<div><strong class="text-gray-900">${customer.customer_name}</strong></div>
-					<small class="text-gray-500">${customer.customer_type || ''}</small>
-				</div>
-			`);
-			
-			item.on('click', () => {
-				this.select_customer(customer);
-			});
-			
-			dropdown.append(item);
-		});
-
-		dropdown.show();
-	}
-
-	select_customer(customer) {
-		this.selectedCustomer = customer.name;
-		$('#customer-search').val(customer.customer_name);
-		$('#customer-dropdown').hide();
-	}
-
-	async load_pos_clients() {
-		try {
-			const clients = await frappe.call({
-				method: 'frappe.client.get_list',
-				args: {
-					doctype: 'POS Client',
-					fields: ['name', 'full_name', 'first_name', 'last_name', 'allow_credit', 'credit_limit', 'current_balance'],
-					filters: [['status', '=', 'Active']],
-					limit_page_length: 0,
-					order_by: 'full_name'
-				}
-			});
-
-			this.posClients = clients.message || [];
-		} catch (error) {
-			console.error('Error loading POS clients:', error);
-			this.posClients = [];
-		}
-	}
-
-	async search_pos_clients(query, page = 1) {
-		if (!query || query.length < 2) {
-			$('#pos-client-dropdown').hide();
-			return;
-		}
-
-		try {
-			const response = await frappe.call({
-				method: 'inventory.pos.doctype.pos_client.pos_client.search_pos_clients',
-				args: {
-					search_term: query,
-					limit: 50 // Get more results for pagination
-				}
-			});
-
-			const allClients = response.message || [];
-			this.currentClientSearch = {
-				query: query,
-				allResults: allClients,
-				currentPage: page,
-				itemsPerPage: 5
-			};
-			this.render_client_dropdown();
-		} catch (error) {
-			console.error('Error searching POS clients:', error);
-			$('#pos-client-dropdown').hide();
-		}
-	}
-
-	render_client_dropdown() {
-		const dropdown = $('#pos-client-dropdown');
-		dropdown.empty();
-
-		if (!this.currentClientSearch || this.currentClientSearch.allResults.length === 0) {
-			dropdown.append('<div class="p-3 text-gray-500">' + __('No clients found') + '</div>');
-			dropdown.show();
-			return;
-		}
-
-		const { allResults, currentPage, itemsPerPage } = this.currentClientSearch;
-		const totalPages = Math.ceil(allResults.length / itemsPerPage);
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		const currentPageResults = allResults.slice(startIndex, endIndex);
-
-		// Add pagination header
-		const header = $(`
-			<div class="p-2 bg-gray-50 border-b border-gray-200 flex justify-between items-center text-sm">
-				<span class="text-gray-600">${__('Page')} ${currentPage} ${__('of')} ${totalPages} (${allResults.length} ${__('total')})</span>
-				<div class="flex gap-1">
-					<button class="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" id="prev-page" ${currentPage === 1 ? 'disabled' : ''}>
-						<i class="fa fa-chevron-left"></i>
-					</button>
-					<button class="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" id="next-page" ${currentPage === totalPages ? 'disabled' : ''}>
-						<i class="fa fa-chevron-right"></i>
-					</button>
-				</div>
-			</div>
-		`);
-		dropdown.append(header);
-
-		// Add pagination event handlers
-		header.find('#prev-page').on('click', (e) => {
-			e.preventDefault();
-			if (currentPage > 1) {
-				this.search_pos_clients(this.currentClientSearch.query, currentPage - 1);
-			}
-		});
-
-		header.find('#next-page').on('click', (e) => {
-			e.preventDefault();
-			if (currentPage < totalPages) {
-				this.search_pos_clients(this.currentClientSearch.query, currentPage + 1);
-			}
-		});
-
-		// Add current page results
-		currentPageResults.forEach(client => {
-			const creditInfo = client.allow_credit ? 
-				`<small class="text-gray-500 block">Credit: ${this.format_currency(client.credit_limit - client.current_balance)} available</small>` : '';
-			
-			const item = $(`
-				<div class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100" data-client="${client.name}">
-					<div><strong class="text-gray-900">${client.full_name}</strong></div>
-					${creditInfo}
-				</div>
-			`);
-			
-			item.on('click', () => {
-				this.select_pos_client(client);
-			});
-			
-			dropdown.append(item);
-		});
-
-		dropdown.show();
-	}
-
-	select_pos_client(client) {
-		this.selectedPOSClient = client;
-		$('#pos-client-search').val(client.full_name);
-		$('#pos-client-dropdown').hide();
-		
-		// Enable credit payment if client allows it
-		if (client.allow_credit) {
-			$('#payment-method option[value="Credit"]').prop('disabled', false);
-		} else {
-			$('#payment-method option[value="Credit"]').prop('disabled', true);
-			if (this.selectedPaymentMethod === 'Credit') {
-				this.selectedPaymentMethod = 'Cash';
-				$('#payment-method').val('Cash');
-			}
-		}
-	}
-
-	handle_payment_method_change() {
-		if (this.selectedPaymentMethod === 'Credit') {
-			if (!this.selectedPOSClient) {
-				frappe.msgprint(__('Please select a POS client for credit payment'));
-				this.selectedPaymentMethod = 'Cash';
-				$('#payment-method').val('Cash');
-				return;
-			}
-			
-			if (!this.selectedPOSClient.allow_credit) {
-				frappe.msgprint(__('Selected client is not allowed for credit payments'));
-				this.selectedPaymentMethod = 'Cash';
-				$('#payment-method').val('Cash');
-				return;
-			}
-			
-			// For credit payment, set paid amount to 0
-			$('#paid-amount').val(0).prop('disabled', true);
-			this.paidAmount = 0;
-		} else {
-			// Enable paid amount input for other payment methods
-			$('#paid-amount').prop('disabled', false);
-		}
-		
-		this.update_change_display();
-		this.update_complete_sale_button();
-	}
-
-	async get_item_prices(itemCodes) {
-		try {
-			// Use the new dedicated API for POS price fetching
-			const response = await frappe.call({
-				method: 'inventory.inventory.doctype.item_price.item_price.get_item_prices_for_pos',
-				args: {
-					item_codes: itemCodes,
-					customer: this.selectedCustomer || null
-				}
-			});
-
-			return response.message || {};
-		} catch (error) {
-			console.error('Error fetching item prices:', error);
-			// Show a warning to the user if prices couldn't be loaded
-			if (itemCodes.length > 0) {
-				this.show_toast(__('Warning: Could not load item prices. Using fallback pricing.'), 'warning');
-			}
-			return {};
-		}
-	}
-
-	async refresh_product_prices() {
-		try {
-			// Show loading state
-			const refreshBtn = $('#refresh-prices');
-			const originalContent = refreshBtn.html();
-			refreshBtn.html('<i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
-			
-			// Get current item codes
-			const itemCodes = this.products.map(item => item.item_code);
-			
-			// Fetch updated prices
-			const prices = await this.get_item_prices(itemCodes);
-			
-			// Update product prices
-			this.products.forEach(product => {
-				product.standard_rate = prices[product.item_code] || 0;
-			});
-			
-			// Re-render products
-			this.render_products();
-			
-			this.show_toast(__('Product prices refreshed'), 'success');
-		} catch (error) {
-			console.error('Error refreshing product prices:', error);
-			this.show_toast(__('Error refreshing prices'), 'error');
-		} finally {
-			// Restore button state
-			const refreshBtn = $('#refresh-prices');
-			refreshBtn.html('<i class="fa fa-refresh"></i>').prop('disabled', false);
-		}
-	}
-
-	async refresh_product_stock(showLoadingState = false) {
-		try {
-			// Show loading state if manually triggered
-			if (showLoadingState) {
-				const refreshBtn = $('#refresh-stock');
-				const originalContent = refreshBtn.html();
-				refreshBtn.html('⏳').prop('disabled', true);
-			}
-			
-			// Add a delay to ensure stock updates are committed to database
-			const delay = showLoadingState ? 200 : 1000; // Shorter delay for manual refresh
-			await new Promise(resolve => setTimeout(resolve, delay));
-			
-			// Get current warehouse from session
-			const warehouse = this.currentSession?.warehouse || null;
-			
-			// Reload products with updated stock information
-			const products = await frappe.call({
-				method: 'inventory.pos.api.get_pos_items',
-				args: {
-					warehouse: warehouse,
-					search_term: ''
-				}
-			});
-
-			// Update products with fresh stock data
-			const oldProducts = [...this.products];
-			this.products = (products.message || []).map(item => ({
-				...item,
-				available_qty: item.stock_qty || 0
-			}));
-
-			// Check if stock actually changed and show feedback
-			let stockChanged = false;
-			for (let i = 0; i < this.products.length; i++) {
-				const oldProduct = oldProducts.find(p => p.item_code === this.products[i].item_code);
-				if (oldProduct && oldProduct.available_qty !== this.products[i].available_qty) {
-					stockChanged = true;
-					break;
-				}
-			}
-
-			// Re-render products to show updated stock
-			this.render_products();
-			
-			// Show feedback based on context
-			if (showLoadingState) {
-				if (stockChanged) {
-					this.show_toast(__('Stock levels refreshed successfully'), 'success');
-				} else {
-					this.show_toast(__('Stock levels are up to date'), 'info');
-				}
-			} else if (stockChanged) {
-				this.show_toast(__('Stock levels updated'), 'info');
-			}
-			
-		} catch (error) {
-			console.error('Error refreshing product stock:', error);
-			// Show error if stock refresh fails
-			this.show_toast(__('Failed to refresh stock levels'), 'warning');
-		} finally {
-			// Restore button state if manually triggered
-			if (showLoadingState) {
-				const refreshBtn = $('#refresh-stock');
-				refreshBtn.html('📦').prop('disabled', false);
-			}
-		}
-	}
-
-	async load_shortcuts() {
-		try {
-					const shortcuts_response = await frappe.call({
-			method: 'inventory.doctype.pos_shortcut.pos_shortcut.get_all_shortcuts'
-		});
-
-			this.shortcuts = shortcuts_response.message || {};
-			this.render_shortcuts();
-			this.bind_shortcut_events();
-		} catch (error) {
-			console.log('Error loading shortcuts:', error);
-		}
-	}
-
-	render_shortcuts() {
-		// Render function shortcuts
-		const functionContainer = $('#function-shortcuts');
-		functionContainer.empty();
-		
-		this.shortcuts.functions?.forEach(shortcut => {
-			const shortcutBtn = $(`
-				<button class="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-md text-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 shortcut-btn w-full" 
-						data-shortcut-key="${shortcut.shortcut_key}" 
-						data-shortcut-type="function" 
-						data-action="${shortcut.action_type}"
-						title="${shortcut.shortcut_name} (${shortcut.shortcut_key})">
-					<strong>${shortcut.shortcut_key}</strong><br>
-					<small>${shortcut.shortcut_name}</small>
-				</button>
-			`);
-			functionContainer.append(shortcutBtn);
-		});
-
-		// Render payment shortcuts
-		const paymentContainer = $('#payment-shortcuts');
-		paymentContainer.empty();
-		
-		this.shortcuts.payments?.forEach(shortcut => {
-			const shortcutBtn = $(`
-				<button class="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-md text-sm hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 shortcut-btn w-full" 
-						data-shortcut-key="${shortcut.shortcut_key}" 
-						data-shortcut-type="payment" 
-						data-method="${shortcut.shortcut_name}"
-						title="${shortcut.shortcut_name} (${shortcut.shortcut_key})">
-					<strong>${shortcut.shortcut_key}</strong><br>
-					<small>${shortcut.shortcut_name}</small>
-				</button>
-			`);
-			paymentContainer.append(shortcutBtn);
-		});
-
-		// Render product shortcuts
-		const productContainer = $('#product-shortcuts');
-		productContainer.empty();
-		
-		this.shortcuts.products?.forEach(shortcut => {
-			const shortcutBtn = $(`
-				<button class="bg-cyan-50 border border-cyan-200 text-cyan-700 px-3 py-2 rounded-md text-sm hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 shortcut-btn w-full" 
-						data-shortcut-key="${shortcut.shortcut_key}" 
-						data-shortcut-type="product" 
-						data-item-code="${shortcut.item_code}"
-						data-item-name="${shortcut.item_name}"
-						title="${shortcut.item_name} (${shortcut.shortcut_key})">
-					<strong>${shortcut.shortcut_key}</strong><br>
-					<small>${shortcut.item_name}</small>
-				</button>
-			`);
-			productContainer.append(shortcutBtn);
-		});
-	}
-
-	bind_shortcut_events() {
-		const self = this;
-
-		// Bind click events for shortcut buttons
-		$('.shortcut-btn').on('click', function() {
-			const shortcutType = $(this).data('shortcut-type');
-			const shortcutKey = $(this).data('shortcut-key');
-
-			if (shortcutType === 'function') {
-				const action = $(this).data('action');
-				self.execute_function_shortcut(action);
-			} else if (shortcutType === 'payment') {
-				const method = $(this).data('method');
-				self.execute_payment_shortcut(method);
-			} else if (shortcutType === 'product') {
-				const itemCode = $(this).data('item-code');
-				const itemName = $(this).data('item-name');
-				self.execute_product_shortcut(itemCode, itemName);
-			}
-		});
-
-		// Bind keyboard events
-		$(document).on('keydown', function(e) {
-			const key = e.key;
-			const functionKey = e.key.startsWith('F') ? e.key : null;
-			
-			// Check if any shortcut matches the pressed key
-			const allShortcuts = [
-				...(self.shortcuts.functions || []),
-				...(self.shortcuts.payments || []),
-				...(self.shortcuts.products || [])
-			];
-
-			const matchingShortcut = allShortcuts.find(s => s.shortcut_key === key || s.shortcut_key === functionKey);
-			
-			if (matchingShortcut) {
-				e.preventDefault();
-				self.execute_shortcut_by_key(matchingShortcut);
-			}
-		});
-	}
-
-	execute_shortcut_by_key(shortcut) {
-		if (shortcut.shortcut_type === 'Function') {
-			this.execute_function_shortcut(shortcut.action_type);
-		} else if (shortcut.shortcut_type === 'Payment') {
-			this.execute_payment_shortcut(shortcut.shortcut_name);
-		} else if (shortcut.shortcut_type === 'Product') {
-			this.execute_product_shortcut(shortcut.item_code, shortcut.item_name);
-		}
-	}
-
-	execute_function_shortcut(action) {
-		switch (action) {
-			case 'New Sale':
-				this.clear_cart();
-				break;
-			case 'Clear Cart':
-				this.clear_cart();
-				break;
-			case 'Print Receipt':
-				this.print_receipt();
-				break;
-			case 'Close Session':
-				this.close_session();
-				break;
-			case 'Toggle Language':
-				this.toggle_language();
-				break;
-		}
-		this.show_toast(__('Function executed: ') + action, 'info');
-	}
-
-	execute_payment_shortcut(method) {
-		$('#payment-method').val(method);
-		this.selectedPaymentMethod = method;
-		this.show_toast(__('Payment method set to: ') + method, 'info');
-	}
-
-	execute_product_shortcut(itemCode, itemName) {
-		// Find the product in the products list
-		const product = this.products.find(p => p.item_code === itemCode);
-		if (product) {
-			this.add_to_cart(product);
-		} else {
-			// Create a temporary product object with price lookup
-			this.add_product_with_price_lookup(itemCode, itemName);
-		}
-	}
-
-	async add_product_with_price_lookup(itemCode, itemName) {
-		try {
-			// Fetch price for this specific item
-			const prices = await this.get_item_prices([itemCode]);
-			const price = prices[itemCode] || 0;
-			
-			const tempProduct = {
-				item_code: itemCode,
-				item_name: itemName,
-				standard_rate: price
-			};
-			this.add_to_cart(tempProduct);
-		} catch (error) {
-			console.error('Error fetching price for product shortcut:', error);
-			// Add with zero price if price lookup fails
-			const tempProduct = {
-				item_code: itemCode,
-				item_name: itemName,
-				standard_rate: 0
-			};
-			this.add_to_cart(tempProduct);
-		}
-	}
-
-	render_products() {
-		const grid = $('#products-grid');
-		grid.empty();
-
-		const filteredProducts = this.products.filter(product => {
-			if (!this.productSearch) return true;
-			const search = this.productSearch.toLowerCase();
-			return product.item_name.toLowerCase().includes(search) ||
-				   product.item_code.toLowerCase().includes(search) ||
-				   (product.barcode && product.barcode.toLowerCase().includes(search));
-		});
-
-		const self = this; // Store reference to this
-
-		filteredProducts.forEach(product => {
-			const price = product.standard_rate || 0;
-			const hasPrice = price > 0;
-			const stockQty = product.available_qty || 0;
-			const isOutOfStock = stockQty <= 0;
-			const isLowStock = stockQty > 0 && stockQty <= 5;
-			
-			const productCard = $(`
-				<div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow product-card ${isOutOfStock ? 'out-of-stock opacity-50' : ''}" style="cursor: pointer;" tabindex="0">
-					<div class="p-3">
-						<h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">${product.item_name}</h3>
-						<p class="text-xs text-gray-500 mb-1">${product.item_code}</p>
-						${product.barcode ? `<p class="text-xs text-gray-500 mb-2"><i class="fa fa-barcode"></i> ${product.barcode}</p>` : ''}
-						<div class="product-price text-sm font-medium ${hasPrice ? 'text-blue-600' : 'text-gray-400'} mb-1">${hasPrice ? self.format_currency(price) : __('No Price Set')}</div>
-						<div class="product-stock text-xs ${isOutOfStock ? 'text-red-600' : isLowStock ? 'text-yellow-600' : 'text-gray-500'}">
-							${__('Stock')}: ${stockQty}
-							${isOutOfStock ? ' - ' + __('Out of Stock') : isLowStock ? ' - ' + __('Low Stock') : ''}
-						</div>
-					</div>
-				</div>
-			`);
-
-			// Handle click and keyboard events
-			productCard.on('click keypress', function(e) {
-				if (e.type === 'keypress' && e.which !== 13) return;
-				
-				// Prevent adding out-of-stock items
-				if (isOutOfStock) {
-					self.show_toast(__('Item is out of stock'), 'warning');
-					return;
-				}
-				
-				// Add click animation
-				$(this).addClass('product-clicked');
-				setTimeout(() => $(this).removeClass('product-clicked'), 200);
-				self.add_to_cart(product);
-			});
-			
-			// Add hover effect for low stock warning
-			if (isLowStock) {
-				productCard.on('mouseenter', function() {
-					self.show_toast(__('Low stock warning: Only {0} items remaining').replace('{0}', stockQty), 'warning');
-				});
-			}
-
-			grid.append(productCard);
-		});
-	}
-
-	add_to_cart(product) {
-		const existingItem = this.cart.find(item => item.item_code === product.item_code);
-		
-		if (existingItem) {
-			existingItem.qty += 1;
-			existingItem.amount = existingItem.qty * existingItem.rate;
-		} else {
-			this.cart.push({
-				item_code: product.item_code,
-				item_name: product.item_name,
-				qty: 1,
-				rate: product.standard_rate || 0,
-				amount: product.standard_rate || 0
-			});
-		}
-
-		this.render_cart();
-		this.update_cart_total();
-		this.update_complete_sale_button();
-		
-		// Show success feedback
-		this.show_toast(__('Added to cart: ') + product.item_name, 'success');
-		
-		// Add cart animation
-		$('#cart-total').addClass('number-change');
-		setTimeout(() => $('#cart-total').removeClass('number-change'), 300);
-	}
-
-	render_cart() {
-		const cartContainer = $('#cart-items');
-		cartContainer.empty();
-
-		if (this.cart.length === 0) {
-			cartContainer.html(`
-				<div class="text-center py-5">
-					<div class="mb-3" style="font-size: 48px; color: var(--text-light);">🛒</div>
-					<h6 class="text-muted">${__('Cart is empty')}</h6>
-					<small class="text-muted">${__('Add products to get started')}</small>
-				</div>
-			`);
-			return;
-		}
-
-		this.cart.forEach((item, index) => {
-			const cartItem = $(`
-				<div class="cart-item mb-3">
-					<div class="row align-items-start">
-						<div class="col-12">
-							<div class="d-flex justify-content-between align-items-start mb-2">
-								<div>
-									<div class="font-weight-bold text-dark">${item.item_name}</div>
-									<small class="text-muted">${item.item_code}</small>
-								</div>
-								<button class="btn btn-sm btn-link text-danger p-0 remove-item" style="font-size: 18px; line-height: 1;">×</button>
-							</div>
-						</div>
-						<div class="col-12">
-							<div class="row align-items-center">
-								<div class="col-6">
-									<div class="input-group input-group-sm">
-										<div class="input-group-prepend">
-											<button class="btn btn-outline-secondary qty-minus" type="button">-</button>
-										</div>
-										<input type="text" class="form-control text-center" value="${item.qty}" readonly>
-										<div class="input-group-append">
-											<button class="btn btn-outline-secondary qty-plus" type="button">+</button>
-										</div>
-									</div>
-								</div>
-								<div class="col-6 text-right">
-									<div class="font-weight-bold text-primary" style="font-size: 16px;">${this.format_currency(item.amount)}</div>
-									<small class="text-muted">${this.format_currency(item.rate)} ${__('each')}</small>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			`);
-
-			cartItem.find('.qty-minus').on('click', () => {
-				this.update_quantity(index, -1);
-			});
-
-			cartItem.find('.qty-plus').on('click', () => {
-				this.update_quantity(index, 1);
-			});
-
-			cartItem.find('.remove-item').on('click', () => {
-				this.remove_from_cart(index);
-			});
-
-			cartContainer.append(cartItem);
-		});
-	}
-
-	update_quantity(index, change) {
-		const item = this.cart[index];
-		item.qty = Math.max(1, item.qty + change);
-		item.amount = item.qty * item.rate;
-		
-		this.render_cart();
-		this.update_cart_total();
-		this.update_complete_sale_button();
-	}
-
-	remove_from_cart(index) {
-		this.cart.splice(index, 1);
-		this.render_cart();
-		this.update_cart_total();
-		this.update_complete_sale_button();
-	}
-
-	clear_cart() {
-		this.cart = [];
-		this.paidAmount = 0;
-		this.modifyingInvoice = null;
-		this.selectedCustomer = null;
-		this.selectedPOSClient = null;
-		$('#paid-amount').val('').prop('disabled', false);
-		$('#customer-select').val('');
-		$('#pos-client-search').val('');
-		$('#pos-client-dropdown').hide();
-		$('#payment-method').val('Cash');
-		this.selectedPaymentMethod = 'Cash';
-		$('#complete-sale').text(__('Complete Sale'));
-		this.render_cart();
-		this.update_cart_total();
-		this.update_complete_sale_button();
-		this.update_change_display();
-	}
-
-	update_cart_total() {
-		const total = this.cart.reduce((sum, item) => sum + item.amount, 0);
-		$('#cart-total').text(this.format_currency(total));
-		
-		// Update paid amount minimum
-		$('#paid-amount').attr('min', total);
-		
-		// Only auto-update paid amount if not modifying an existing invoice
-		if (!this.modifyingInvoice && this.paidAmount < total) {
-			$('#paid-amount').val(total);
-			this.paidAmount = total;
-		}
-		
-		this.update_change_display();
-	}
-
-	update_change_display() {
-		const total = this.cart.reduce((sum, item) => sum + item.amount, 0);
-		const change = Math.max(0, this.paidAmount - total);
-		
-		if (change > 0) {
-			$('#change-amount').text(this.format_currency(change));
-			$('#change-display').show();
-		} else {
-			$('#change-display').hide();
-		}
-	}
-
-	update_complete_sale_button() {
-		const total = this.cart.reduce((sum, item) => sum + item.amount, 0);
-		let canComplete = false;
-		
-		if (this.cart.length > 0) {
-			if (this.selectedPaymentMethod === 'Credit') {
-				// For credit payment, check if client is selected and has sufficient credit
-				if (this.selectedPOSClient && this.selectedPOSClient.allow_credit) {
-					const availableCredit = this.selectedPOSClient.credit_limit - this.selectedPOSClient.current_balance;
-					canComplete = total <= availableCredit;
-				}
-			} else {
-				// For other payment methods, check if paid amount is sufficient
-				canComplete = this.paidAmount >= total;
-			}
-		}
-		
-		$('#complete-sale').prop('disabled', !canComplete);
-	}
-
-	async complete_sale() {
-		if (this.cart.length === 0) {
-			frappe.msgprint(__('Cart is empty'));
-			return;
-		}
-
-		if (!this.currentSession || !this.currentSession.name) {
-			frappe.msgprint(__('No active session found. Please start a session first.'));
-			return;
-		}
-
-		const total = this.cart.reduce((sum, item) => sum + item.amount, 0);
-		
-		// Validate payment based on method
-		if (this.selectedPaymentMethod === 'Credit') {
-			if (!this.selectedPOSClient) {
-				frappe.msgprint(__('Please select a POS client for credit payment'));
-				return;
-			}
-			
-			// Validate credit limit
-			const availableCredit = this.selectedPOSClient.credit_limit - this.selectedPOSClient.current_balance;
-			if (total > availableCredit) {
-				frappe.msgprint(__(`Insufficient credit limit. Available: ${availableCredit}, Required: ${total}`));
-				return;
-			}
-		} else {
-			if (this.paidAmount < total) {
-				frappe.msgprint(__('Insufficient payment amount'));
-				return;
-			}
-		}
-
-		try {
-			let response;
-			
-			if (this.modifyingInvoice) {
-				// Update existing invoice
-				response = await frappe.call({
-					method: 'inventory.pos.api.update_pos_invoice',
-					args: {
-						invoice_name: this.modifyingInvoice,
-						items: this.cart,
-						payments: [{
-							payment_method: $('#payment-method').val(),
-							amount: this.paidAmount
-						}],
-						customer: this.selectedCustomer || 'Walk-in Customer',
-						pos_client: this.selectedPOSClient ? this.selectedPOSClient.name : null
-					}
-				});
-				
-				if (response.message && response.message.success) {
-					this.show_toast(__('Invoice updated successfully!'), 'success');
-					this.show_receipt({
-						name: response.message.new_invoice,
-						cancelled_invoice: response.message.cancelled_invoice
-					});
-					this.clear_cart();
-					this.modifyingInvoice = null;
-					$('#complete-sale').text(__('Complete Sale'));
-					// Refresh product stock after successful invoice update
-					await this.refresh_product_stock();
-				}
-			} else {
-				// Create new invoice
-				response = await frappe.call({
-					method: 'inventory.pos.doctype.pos_invoice.pos_invoice.create_pos_invoice',
-					args: {
-						pos_profile: this.currentSession.pos_profile,
-						pos_session: this.currentSession.name,
-						items: this.cart,
-						payments: [{
-							payment_method: $('#payment-method').val(),
-							amount: this.paidAmount
-						}],
-						customer: this.selectedCustomer || 'Walk-in Customer',
-						pos_client: this.selectedPOSClient ? this.selectedPOSClient.name : null
-					}
-				});
-
-				if (response.message) {
-					this.show_toast(__('Sale completed successfully!'), 'success');
-					this.show_receipt(response.message);
-					this.clear_cart();
-					// Refresh product stock after successful sale
-					await this.refresh_product_stock();
-				}
-			}
-
-		} catch (error) {
-			frappe.msgprint(__('Error completing sale: ') + error.message);
-		}
-	}
-
-	show_receipt(invoice) {
-		const total = this.cart.reduce((sum, item) => sum + item.amount, 0);
-		const change = Math.max(0, this.paidAmount - total);
-
-		let receiptHtml = `
-			<div class="text-center mb-3">
-				<h6>${__('Sales Receipt')}</h6>
-				<small>${__('Invoice')}: ${invoice.name}</small>
-			</div>
-		`;
-
-		this.cart.forEach(item => {
-			receiptHtml += `
-				<div class="row mb-1">
-					<div class="col-8">${item.item_name} (${item.qty})</div>
-					<div class="col-4 text-right">${this.format_currency(item.amount)}</div>
-				</div>
-			`;
-		});
-
-		receiptHtml += `
-			<hr>
-			<div class="row font-weight-bold">
-				<div class="col-6">${__('Total')}:</div>
-				<div class="col-6 text-right">${this.format_currency(total)}</div>
-			</div>
-			<div class="row">
-				<div class="col-6">${__('Paid')}:</div>
-				<div class="col-6 text-right">${this.format_currency(this.paidAmount)}</div>
-			</div>
-		`;
-
-		if (change > 0) {
-			receiptHtml += `
-				<div class="row">
-					<div class="col-6">${__('Change')}:</div>
-					<div class="col-6 text-right">${this.format_currency(change)}</div>
-				</div>
-			`;
-		}
-
-		$('#receipt-content').html(receiptHtml);
-		
-		// Show modal using standard JavaScript
-		document.getElementById('receipt-modal').style.display = 'flex';
-	}
-
-	print_receipt() {
-		const printContent = $('#receipt-content').html();
-		const printWindow = window.open('', '_blank');
-		printWindow.document.write(`
-			<html>
-				<head>
-					<title>${__('Receipt')}</title>
-					<style>
-						body { font-family: Arial, sans-serif; margin: 20px; }
-						.row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-						hr { margin: 10px 0; }
-						.text-center { text-align: center; }
-						.font-weight-bold { font-weight: bold; }
-					</style>
-				</head>
-				<body>
-					${printContent}
-				</body>
-			</html>
-		`);
-		printWindow.document.close();
-		printWindow.print();
-	}
-
-	async close_session() {
-		if (!this.currentSession) return;
-
-		const confirmed = await frappe.confirm(__('Are you sure you want to close the current session?'));
-		if (!confirmed) return;
-
-		try {
-			await frappe.call({
-				method: 'inventory.pos.doctype.pos_session.pos_session.close_session',
-				args: {
-					session_name: this.currentSession.name
-				}
-			});
-
-			frappe.msgprint(__('Session closed successfully'));
-			this.currentSession = null;
-			$('#pos-interface').hide();
-			// Show session modal using standard JavaScript
-			document.getElementById('session-start-modal').style.display = 'flex';
-			$('#session-indicator').hide();
-
-		} catch (error) {
-			frappe.msgprint(__('Error closing session: ') + error.message);
-		}
-	}
-
-	toggle_language() {
-		// Simple language toggle - in a real implementation, 
-		// this would reload the page with the new language
-		frappe.msgprint(__('Language toggle feature will be implemented with proper translation system'));
-	}
-
-	format_currency(amount) {
-		return new Intl.NumberFormat('ar-DZ', {
-			style: 'currency',
-			currency: 'DZD',
-			minimumFractionDigits: 2
-		}).format(amount || 0);
-	}
-
-	show_toast(message, type = 'success') {
-		// Remove existing toast
-		$('.pos-toast').remove();
-		
-		// Create new toast
-		const toast = $(`
-			<div class="pos-toast ${type}">
-				<i class="fa fa-check-circle" style="margin-right: 8px;"></i>
-				${message}
-			</div>
-		`);
-		
-		// Add to DOM
-		$('body').append(toast);
-		
-		// Show with animation
-		setTimeout(() => toast.addClass('show'), 100);
-		
-		// Hide after 3 seconds
-		setTimeout(() => {
-			toast.removeClass('show');
-			setTimeout(() => toast.remove(), 300);
-		}, 3000);
-	}
-
-	async show_invoice_selection_modal() {
-		try {
-			// Load recent invoices
-			const response = await frappe.call({
-				method: 'inventory.pos.api.get_pos_invoices_for_modification',
-				args: {
-					limit: 20
-				}
-			});
-
-			this.availableInvoices = response.message || [];
-			this.render_invoice_list();
-			
-			// Show invoice selection modal
-			document.getElementById('invoice-selection-modal').style.display = 'flex';
-
-		} catch (error) {
-			frappe.msgprint(__('Error loading invoices: ') + error.message);
-		}
-	}
-
-	render_invoice_list(filteredInvoices = null) {
-		const invoices = filteredInvoices || this.availableInvoices;
-		const listContainer = $('#invoice-list');
-		
-		if (!invoices || invoices.length === 0) {
-			listContainer.html(`
-				<div class="text-center text-muted py-4">
-					<i class="fa fa-file-text-o fa-3x mb-3"></i>
-					<p>${__('No recent invoices found')}</p>
-				</div>
-			`);
-			return;
-		}
-
-		let html = '';
-		invoices.forEach(invoice => {
-			html += `
-				<div class="invoice-item card mb-2" data-invoice="${invoice.name}" style="cursor: pointer;">
-					<div class="card-body py-2">
-						<div class="row">
-							<div class="col-md-3">
-								<strong>${invoice.name}</strong>
-								<br><small class="text-muted">${invoice.posting_date} ${invoice.posting_time}</small>
-							</div>
-							<div class="col-md-4">
-								<span class="text-muted">${__('Customer')}:</span>
-								<br>${invoice.customer || 'Walk-in Customer'}
-							</div>
-							<div class="col-md-3">
-								<span class="text-muted">${__('Total')}:</span>
-								<br><strong>${this.format_currency(invoice.grand_total)}</strong>
-							</div>
-							<div class="col-md-2">
-								<span class="badge badge-${invoice.status === 'Paid' ? 'success' : 'warning'}">
-									${invoice.status}
+						</v-card-text>
+					</v-card>
+
+					<!-- Shortcuts Section -->
+					<v-card class="mt-4 shortcuts-card" elevation="3" v-if="hasShortcuts">
+						<v-card-title class="pa-4">
+							<v-icon class="mr-2" color="accent">mdi-keyboard</v-icon>
+							<span class="text-h6">{{ __('Quick Shortcuts') }}</span>
+						</v-card-title>
+						<v-divider></v-divider>
+						<v-card-text class="pa-4">
+							<v-row>
+								<v-col cols="12" md="4" v-if="shortcuts.functions && shortcuts.functions.length">
+									<div class="text-subtitle-2 text-grey mb-2">{{ __('Functions') }}</div>
+									<v-chip-group>
+										<v-chip
+											v-for="shortcut in shortcuts.functions"
+											:key="shortcut.shortcut_key"
+											color="primary"
+											variant="outlined"
+											@click="executeShortcut(shortcut)"
+											class="ma-1"
+										>
+											<strong>{{ shortcut.shortcut_key }}</strong>
+											<span class="ml-1">{{ shortcut.shortcut_name }}</span>
+										</v-chip>
+									</v-chip-group>
+								</v-col>
+								<v-col cols="12" md="4" v-if="shortcuts.payments && shortcuts.payments.length">
+									<div class="text-subtitle-2 text-grey mb-2">{{ __('Payments') }}</div>
+									<v-chip-group>
+										<v-chip
+											v-for="shortcut in shortcuts.payments"
+											:key="shortcut.shortcut_key"
+											color="success"
+											variant="outlined"
+											@click="executePaymentShortcut(shortcut)"
+											class="ma-1"
+										>
+											<strong>{{ shortcut.shortcut_key }}</strong>
+											<span class="ml-1">{{ shortcut.shortcut_name }}</span>
+										</v-chip>
+									</v-chip-group>
+								</v-col>
+								<v-col cols="12" md="4" v-if="shortcuts.products && shortcuts.products.length">
+									<div class="text-subtitle-2 text-grey mb-2">{{ __('Products') }}</div>
+									<v-chip-group>
+										<v-chip
+											v-for="shortcut in shortcuts.products"
+											:key="shortcut.shortcut_key"
+											color="info"
+											variant="outlined"
+											@click="executeProductShortcut(shortcut)"
+											class="ma-1"
+										>
+											<strong>{{ shortcut.shortcut_key }}</strong>
+											<span class="ml-1">{{ shortcut.item_name }}</span>
+										</v-chip>
+									</v-chip-group>
+								</v-col>
+							</v-row>
+						</v-card-text>
+					</v-card>
+				</v-col>
+
+				<!-- Cart & Payment Section -->
+				<v-col cols="12" lg="5">
+						<!-- Cart -->
+						<v-card class="cart-card mb-4" elevation="3" :class="{ 'modifying-invoice': modifyingInvoice }">
+							<v-card-title class="d-flex align-center pa-4 cart-header">
+								<v-icon class="mr-2" :color="modifyingInvoice ? 'warning' : 'success'">
+									{{ modifyingInvoice ? 'mdi-file-document-edit' : 'mdi-cart' }}
+								</v-icon>
+								<span class="text-h6">
+									{{ modifyingInvoice ? __('Modifying Invoice') : __('Cart') }}
 								</span>
+								<v-chip v-if="modifyingInvoice" color="warning" size="small" class="ml-2">
+									{{ modifyingInvoice }}
+								</v-chip>
+								<v-badge
+									v-else
+									:content="cart.length"
+									:model-value="cart.length > 0"
+									color="error"
+									class="ml-2"
+								>
+								</v-badge>
+								<v-spacer></v-spacer>
+							<v-autocomplete
+								v-model="selectedCustomer"
+								:items="customers"
+								item-title="customer_name"
+								item-value="name"
+								:label="__('Customer')"
+								variant="outlined"
+								density="compact"
+								hide-details
+								clearable
+								:placeholder="__('Walk-in Customer')"
+								style="max-width: 200px;"
+								prepend-inner-icon="mdi-account"
+								@update:search="searchCustomers"
+							></v-autocomplete>
+						</v-card-title>
+						<v-divider></v-divider>
+						<v-card-text class="cart-items pa-0" style="max-height: 350px; min-height: 200px; overflow-y: auto;">
+							<v-list v-if="cart.length > 0" lines="two">
+								<v-list-item v-for="(item, index) in cart" :key="item.item_code" class="cart-item">
+									<template v-slot:prepend>
+										<v-avatar color="primary" size="40" class="mr-3">
+											<v-icon color="white">mdi-cube</v-icon>
+										</v-avatar>
+									</template>
+									<v-list-item-title class="font-weight-medium">{{ item.item_name }}</v-list-item-title>
+									<v-list-item-subtitle>
+										{{ formatCurrency(item.rate) }} × {{ item.qty }}
+									</v-list-item-subtitle>
+									<template v-slot:append>
+										<div class="d-flex align-center">
+											<v-btn icon size="small" variant="text" @click="updateQuantity(index, -1)">
+												<v-icon>mdi-minus</v-icon>
+											</v-btn>
+											<span class="mx-2 font-weight-bold">{{ item.qty }}</span>
+											<v-btn icon size="small" variant="text" @click="updateQuantity(index, 1)">
+												<v-icon>mdi-plus</v-icon>
+											</v-btn>
+											<div class="text-right ml-4" style="min-width: 100px;">
+												<div class="text-primary font-weight-bold">{{ formatCurrency(item.amount) }}</div>
+											</div>
+											<v-btn icon size="small" color="error" variant="text" @click="removeFromCart(index)" class="ml-2">
+												<v-icon>mdi-delete</v-icon>
+											</v-btn>
+										</div>
+									</template>
+								</v-list-item>
+							</v-list>
+							<div v-else class="text-center pa-8">
+								<v-icon size="80" color="grey-lighten-2">mdi-cart-outline</v-icon>
+								<div class="text-h6 text-grey mt-4">{{ __('Cart is empty') }}</div>
+								<div class="text-body-2 text-grey">{{ __('Add products to get started') }}</div>
 							</div>
-						</div>
+						</v-card-text>
+						<v-divider></v-divider>
+						<v-card-actions class="pa-4 cart-total">
+							<span class="text-h6">{{ __('Total') }}:</span>
+							<v-spacer></v-spacer>
+							<span class="text-h5 font-weight-bold text-primary">{{ formatCurrency(cartTotal) }}</span>
+						</v-card-actions>
+					</v-card>
+
+					<!-- Payment -->
+					<v-card class="payment-card" elevation="3">
+						<v-card-title class="pa-4 payment-header">
+							<v-icon class="mr-2" color="warning">mdi-credit-card</v-icon>
+							<span class="text-h6">{{ __('Payment') }}</span>
+						</v-card-title>
+						<v-divider></v-divider>
+						<v-card-text class="pa-4">
+							<!-- POS Client -->
+							<v-autocomplete
+								v-model="selectedPOSClient"
+								:items="posClients"
+								item-title="full_name"
+								item-value="name"
+								:label="__('POS Client (Optional)')"
+								variant="outlined"
+								density="comfortable"
+								clearable
+								prepend-inner-icon="mdi-account-circle"
+								class="mb-4"
+								@update:search="searchPOSClients"
+								return-object
+							>
+								<template v-slot:item="{ props, item }">
+									<v-list-item v-bind="props">
+										<template v-slot:subtitle>
+											<span v-if="item.raw.allow_credit">
+												{{ __('Credit Available') }}: {{ formatCurrency(item.raw.credit_limit - item.raw.current_balance) }}
+											</span>
+										</template>
+									</v-list-item>
+								</template>
+							</v-autocomplete>
+
+							<!-- Payment Method -->
+							<v-select
+								v-model="paymentMethod"
+								:items="paymentMethods"
+								:label="__('Payment Method')"
+								variant="outlined"
+								density="comfortable"
+								prepend-inner-icon="mdi-cash-register"
+								class="mb-4"
+							></v-select>
+
+							<!-- Paid Amount -->
+							<v-text-field
+								v-model.number="paidAmount"
+								:label="__('Amount Paid (DZD)')"
+								type="number"
+								variant="outlined"
+								density="comfortable"
+								prepend-inner-icon="mdi-cash"
+								:disabled="paymentMethod === 'Credit'"
+								class="mb-4"
+								min="0"
+								step="0.01"
+							></v-text-field>
+
+							<!-- Change Display -->
+							<v-alert
+								v-if="changeAmount > 0"
+								type="success"
+								variant="tonal"
+								class="mb-4"
+								density="compact"
+							>
+								<strong>{{ __('Change') }}:</strong> {{ formatCurrency(changeAmount) }}
+							</v-alert>
+
+							<!-- Action Buttons -->
+							<v-btn
+								color="success"
+								size="large"
+								block
+								:disabled="!canCompleteSale"
+								@click="completeSale"
+								:loading="completingSale"
+								class="mb-3"
+							>
+								<v-icon left class="mr-2">mdi-check-circle</v-icon>
+								{{ modifyingInvoice ? __('Update Sale') : __('Complete Sale') }}
+							</v-btn>
+
+							<v-row dense>
+								<v-col cols="6">
+									<v-btn
+										color="error"
+										variant="outlined"
+										block
+										@click="clearCart"
+									>
+										<v-icon left class="mr-1">mdi-cart-remove</v-icon>
+										{{ __('Clear') }}
+									</v-btn>
+								</v-col>
+								<v-col cols="6">
+									<v-btn
+										color="secondary"
+										variant="outlined"
+										block
+										@click="showInvoiceModal = true"
+									>
+										<v-icon left class="mr-1">mdi-pencil</v-icon>
+										{{ __('Modify') }}
+									</v-btn>
+								</v-col>
+							</v-row>
+						</v-card-text>
+					</v-card>
+				</v-col>
+			</v-row>
+		</v-container>
+
+		<!-- Invoice Selection Dialog -->
+		<v-dialog v-model="showInvoiceModal" max-width="1000" scrollable>
+			<v-card>
+				<v-card-title class="pa-4 d-flex align-center">
+					<v-icon class="mr-2" color="primary">mdi-history</v-icon>
+					<span class="text-h6">{{ __('Previous Invoices') }}</span>
+					<v-spacer></v-spacer>
+					<v-btn icon variant="text" @click="showInvoiceModal = false">
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text class="pa-4">
+					<v-row class="mb-4">
+						<v-col cols="12" md="6">
+							<v-text-field
+								v-model="invoiceSearch"
+								:placeholder="__('Search by invoice number or customer...')"
+								prepend-inner-icon="mdi-magnify"
+								variant="outlined"
+								density="compact"
+								hide-details
+								clearable
+							></v-text-field>
+						</v-col>
+						<v-col cols="12" md="3">
+							<v-text-field
+								v-model="invoiceFromDate"
+								type="date"
+								:label="__('From Date')"
+								variant="outlined"
+								density="compact"
+								hide-details
+							></v-text-field>
+						</v-col>
+						<v-col cols="12" md="3">
+							<v-text-field
+								v-model="invoiceToDate"
+								type="date"
+								:label="__('To Date')"
+								variant="outlined"
+								density="compact"
+								hide-details
+							></v-text-field>
+						</v-col>
+					</v-row>
+					
+					<v-alert v-if="availableInvoices.length === 0 && !loadingInvoices" type="info" variant="tonal" class="mb-4">
+						{{ __('No invoices found') }}
+					</v-alert>
+					
+					<v-progress-linear v-if="loadingInvoices" indeterminate color="primary" class="mb-4"></v-progress-linear>
+					
+					<v-list style="max-height: 500px; overflow-y: auto;" v-if="filteredInvoices.length > 0">
+						<v-list-item
+							v-for="invoice in filteredInvoices"
+							:key="invoice.name"
+							@click="loadInvoiceForModification(invoice.name)"
+							class="invoice-item"
+							:class="{ 'invoice-item-selected': modifyingInvoice === invoice.name }"
+						>
+							<template v-slot:prepend>
+								<v-avatar color="primary" size="40">
+									<v-icon color="white">mdi-file-document</v-icon>
+								</v-avatar>
+							</template>
+							<v-list-item-title class="font-weight-medium">{{ invoice.name }}</v-list-item-title>
+							<v-list-item-subtitle>
+								<div class="d-flex align-center mt-1">
+									<v-icon size="small" class="mr-1">mdi-account</v-icon>
+									<span>{{ invoice.customer || __('Walk-in Customer') }}</span>
+									<span class="mx-2">•</span>
+									<v-icon size="small" class="mr-1">mdi-calendar</v-icon>
+									<span>{{ invoice.posting_date }} {{ invoice.posting_time || '' }}</span>
+									<span v-if="invoice.item_count" class="mx-2">•</span>
+									<span v-if="invoice.item_count">
+										<v-icon size="small" class="mr-1">mdi-package-variant</v-icon>
+										{{ invoice.item_count }} {{ __('items') }}
+									</span>
+								</div>
+							</v-list-item-subtitle>
+							<template v-slot:append>
+								<div class="d-flex flex-column align-end">
+									<v-chip 
+										:color="invoice.status === 'Paid' ? 'success' : 'warning'" 
+										size="small"
+										class="mb-2"
+									>
+										{{ invoice.status }}
+									</v-chip>
+									<span class="text-h6 font-weight-bold text-primary">
+										{{ formatCurrency(invoice.grand_total) }}
+									</span>
+								</div>
+							</template>
+						</v-list-item>
+					</v-list>
+				</v-card-text>
+				<v-card-actions class="pa-4">
+					<v-spacer></v-spacer>
+					<v-btn color="secondary" variant="text" @click="showInvoiceModal = false">
+						{{ __('Close') }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		<!-- Product Details Dialog -->
+		<v-dialog v-model="showProductDetailsModal" max-width="800" scrollable>
+			<v-card v-if="selectedProductDetails">
+				<v-card-title class="pa-4 d-flex align-center">
+					<v-icon class="mr-2" color="primary">mdi-information</v-icon>
+					<span class="text-h6">{{ __('Product Details') }}</span>
+					<v-spacer></v-spacer>
+					<v-btn icon variant="text" @click="showProductDetailsModal = false">
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text class="pa-4">
+					<v-row v-if="loadingProductDetails">
+						<v-col cols="12" class="text-center py-8">
+							<v-progress-circular indeterminate color="primary"></v-progress-circular>
+							<div class="mt-4">{{ __('Loading product details...') }}</div>
+						</v-col>
+					</v-row>
+					<v-row v-else>
+						<!-- Product Info -->
+						<v-col cols="12">
+							<v-card variant="outlined" class="mb-4">
+								<v-card-title class="text-h6 pa-3">
+									{{ selectedProductDetails.item_name }}
+								</v-card-title>
+								<v-card-text class="pa-3">
+									<v-row>
+										<v-col cols="6">
+											<div class="text-caption text-grey">{{ __('Item Code') }}</div>
+											<div class="text-body-1 font-weight-medium">{{ selectedProductDetails.item_code }}</div>
+										</v-col>
+										<v-col cols="6">
+											<div class="text-caption text-grey">{{ __('Category') }}</div>
+											<div class="text-body-1">{{ selectedProductDetails.item_category || __('N/A') }}</div>
+										</v-col>
+										<v-col cols="6">
+											<div class="text-caption text-grey">{{ __('Unit of Measurement') }}</div>
+											<div class="text-body-1">{{ selectedProductDetails.unit_of_measurement || __('N/A') }}</div>
+										</v-col>
+										<v-col cols="6">
+											<div class="text-caption text-grey">{{ __('Stock Available') }}</div>
+											<div class="text-body-1">
+												<v-chip :color="getStockColor(selectedProductDetails.stock_qty)" size="small">
+													{{ selectedProductDetails.stock_qty || 0 }}
+												</v-chip>
+											</div>
+										</v-col>
+										<v-col cols="12" v-if="selectedProductDetails.description">
+											<div class="text-caption text-grey">{{ __('Description') }}</div>
+											<div class="text-body-2">{{ selectedProductDetails.description }}</div>
+										</v-col>
+									</v-row>
+								</v-card-text>
+							</v-card>
+						</v-col>
+
+						<!-- Selling Prices -->
+						<v-col cols="12" md="6">
+							<v-card variant="outlined" class="h-100">
+								<v-card-title class="pa-3 text-subtitle-1 bg-success-lighten-5">
+									<v-icon class="mr-2" color="success">mdi-arrow-up</v-icon>
+									{{ __('Selling Prices') }}
+								</v-card-title>
+								<v-card-text class="pa-3">
+									<div class="mb-3">
+										<div class="text-caption text-grey">{{ __('Current Selling Price') }}</div>
+										<div class="text-h6 text-success font-weight-bold">
+											{{ formatCurrency(selectedProductDetails.current_selling_price) }}
+										</div>
+									</div>
+									<div class="mb-2">
+										<div class="text-caption text-grey">{{ __('Standard Rate') }}</div>
+										<div class="text-body-1">{{ formatCurrency(selectedProductDetails.standard_rate) }}</div>
+									</div>
+									<v-divider class="my-3"></v-divider>
+									<div v-if="selectedProductDetails.selling_prices && selectedProductDetails.selling_prices.length > 0">
+										<div class="text-caption text-grey mb-2">{{ __('All Selling Prices') }}</div>
+										<v-list density="compact" style="max-height: 200px; overflow-y: auto;">
+											<v-list-item
+												v-for="(price, idx) in selectedProductDetails.selling_prices"
+												:key="idx"
+												class="pa-1"
+											>
+												<v-list-item-title class="text-body-2">
+													{{ formatCurrency(price.price_list_rate) }}
+													<v-chip v-if="price.is_default_price" size="x-small" color="primary" class="ml-2">
+														{{ __('Default') }}
+													</v-chip>
+													<v-chip v-if="price.customer" size="x-small" color="info" class="ml-1">
+														{{ price.customer }}
+													</v-chip>
+												</v-list-item-title>
+												<v-list-item-subtitle class="text-caption">
+													{{ price.valid_from || __('No start date') }} - {{ price.valid_upto || __('No end date') }}
+												</v-list-item-subtitle>
+											</v-list-item>
+										</v-list>
+									</div>
+									<div v-else class="text-caption text-grey text-center py-2">
+										{{ __('No selling prices found') }}
+									</div>
+								</v-card-text>
+							</v-card>
+						</v-col>
+
+						<!-- Buying Prices -->
+						<v-col cols="12" md="6">
+							<v-card variant="outlined" class="h-100">
+								<v-card-title class="pa-3 text-subtitle-1 bg-error-lighten-5">
+									<v-icon class="mr-2" color="error">mdi-arrow-down</v-icon>
+									{{ __('Buying Prices') }}
+								</v-card-title>
+								<v-card-text class="pa-3">
+									<div class="mb-3">
+										<div class="text-caption text-grey">{{ __('Current Buying Price') }}</div>
+										<div class="text-h6 text-error font-weight-bold">
+											{{ formatCurrency(selectedProductDetails.current_buying_price) }}
+										</div>
+									</div>
+									<div class="mb-2">
+										<div class="text-caption text-grey">{{ __('Valuation Rate') }}</div>
+										<div class="text-body-1">{{ formatCurrency(selectedProductDetails.valuation_rate) }}</div>
+									</div>
+									<div class="mb-2">
+										<div class="text-caption text-grey">{{ __('Last Purchase Rate') }}</div>
+										<div class="text-body-1">{{ formatCurrency(selectedProductDetails.last_purchase_rate) }}</div>
+									</div>
+									<v-divider class="my-3"></v-divider>
+									<div v-if="selectedProductDetails.buying_prices && selectedProductDetails.buying_prices.length > 0">
+										<div class="text-caption text-grey mb-2">{{ __('All Buying Prices') }}</div>
+										<v-list density="compact" style="max-height: 200px; overflow-y: auto;">
+											<v-list-item
+												v-for="(price, idx) in selectedProductDetails.buying_prices"
+												:key="idx"
+												class="pa-1"
+											>
+												<v-list-item-title class="text-body-2">
+													{{ formatCurrency(price.price_list_rate) }}
+													<v-chip v-if="price.is_default_price" size="x-small" color="primary" class="ml-2">
+														{{ __('Default') }}
+													</v-chip>
+													<v-chip v-if="price.supplier" size="x-small" color="warning" class="ml-1">
+														{{ price.supplier }}
+													</v-chip>
+												</v-list-item-title>
+												<v-list-item-subtitle class="text-caption">
+													{{ price.valid_from || __('No start date') }} - {{ price.valid_upto || __('No end date') }}
+												</v-list-item-subtitle>
+											</v-list-item>
+										</v-list>
+									</div>
+									<div v-else class="text-caption text-grey text-center py-2">
+										{{ __('No buying prices found') }}
+									</div>
+								</v-card-text>
+							</v-card>
+						</v-col>
+
+						<!-- Stock Information -->
+						<v-col cols="12" v-if="selectedProductDetails.minimum_stock_level || selectedProductDetails.reorder_level">
+							<v-card variant="outlined">
+								<v-card-title class="pa-3 text-subtitle-1">
+									<v-icon class="mr-2">mdi-package-variant</v-icon>
+									{{ __('Stock Management') }}
+								</v-card-title>
+								<v-card-text class="pa-3">
+									<v-row>
+										<v-col cols="4">
+											<div class="text-caption text-grey">{{ __('Available Stock') }}</div>
+											<div class="text-h6">{{ selectedProductDetails.stock_qty || 0 }}</div>
+										</v-col>
+										<v-col cols="4">
+											<div class="text-caption text-grey">{{ __('Minimum Stock Level') }}</div>
+											<div class="text-body-1">{{ selectedProductDetails.minimum_stock_level || 0 }}</div>
+										</v-col>
+										<v-col cols="4">
+											<div class="text-caption text-grey">{{ __('Reorder Level') }}</div>
+											<div class="text-body-1">{{ selectedProductDetails.reorder_level || 0 }}</div>
+										</v-col>
+									</v-row>
+								</v-card-text>
+							</v-card>
+						</v-col>
+					</v-row>
+				</v-card-text>
+				<v-card-actions class="pa-4">
+					<v-spacer></v-spacer>
+					<v-btn
+						color="secondary"
+						variant="text"
+						@click="showProductDetailsModal = false"
+						class="mr-2"
+					>
+						{{ __('Close') }}
+					</v-btn>
+					<v-btn
+						color="primary"
+						variant="elevated"
+						@click="addToCartFromDetails"
+						:disabled="!selectedProductDetails || selectedProductDetails.stock_qty <= 0"
+					>
+						<v-icon left class="mr-1">mdi-cart-plus</v-icon>
+						{{ __('Add to Cart') }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		<!-- Receipt Dialog -->
+		<v-dialog v-model="showReceiptModal" max-width="450">
+			<v-card class="receipt-card">
+				<v-card-title class="pa-4 text-center">
+					<v-icon class="mr-2" color="success">mdi-receipt</v-icon>
+					{{ __('Sales Receipt') }}
+				</v-card-title>
+				<v-divider></v-divider>
+				<v-card-text class="pa-4" id="receipt-content">
+					<div class="text-center mb-4">
+						<div class="text-h6 mb-1">{{ __('Invoice') }}: {{ lastInvoice?.name }}</div>
+						<div class="text-caption text-grey">{{ new Date().toLocaleString() }}</div>
 					</div>
-				</div>
-			`;
-		});
+					<v-table density="compact">
+						<tbody>
+							<tr v-for="item in receiptItems" :key="item.item_code">
+								<td>{{ item.item_name }} ({{ item.qty }})</td>
+								<td class="text-right">{{ formatCurrency(item.amount) }}</td>
+							</tr>
+						</tbody>
+					</v-table>
+					<v-divider class="my-3"></v-divider>
+					<div class="d-flex justify-space-between text-h6">
+						<span>{{ __('Total') }}:</span>
+						<span class="font-weight-bold">{{ formatCurrency(receiptTotal) }}</span>
+					</div>
+					<div class="d-flex justify-space-between">
+						<span>{{ __('Paid') }}:</span>
+						<span>{{ formatCurrency(receiptPaid) }}</span>
+					</div>
+					<div v-if="receiptChange > 0" class="d-flex justify-space-between text-success">
+						<span>{{ __('Change') }}:</span>
+						<span>{{ formatCurrency(receiptChange) }}</span>
+					</div>
+				</v-card-text>
+				<v-card-actions class="pa-4">
+					<v-btn color="primary" variant="outlined" @click="printReceipt">
+						<v-icon left class="mr-1">mdi-printer</v-icon>
+						{{ __('Print') }}
+					</v-btn>
+					<v-spacer></v-spacer>
+					<v-btn color="secondary" variant="text" @click="showReceiptModal = false">
+						{{ __('Close') }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 
-		listContainer.html(html);
+		<!-- Snackbar for notifications - no overlay -->
+		<v-snackbar
+			v-model="snackbar.show"
+			:color="snackbar.color"
+			:timeout="2000"
+			location="top right"
+			:contained="true"
+			:multi-line="false"
+			class="pos-snackbar"
+		>
+			<div class="d-flex align-center">
+				<v-icon size="small" class="mr-2">{{ snackbar.color === 'success' ? 'mdi-check-circle' : snackbar.color === 'error' ? 'mdi-alert-circle' : 'mdi-information' }}</v-icon>
+				{{ snackbar.message }}
+			</div>
+			<template v-slot:actions>
+				<v-btn icon size="x-small" variant="text" @click="snackbar.show = false">
+					<v-icon size="small">mdi-close</v-icon>
+				</v-btn>
+			</template>
+		</v-snackbar>
+	</v-main>
+</v-app>
+		`;
 
-		// Bind click events
-		$('.invoice-item').on('click', (e) => {
-			const invoiceName = $(e.currentTarget).data('invoice');
-			this.load_invoice_for_modification(invoiceName);
-		});
-	}
-
-	filter_invoice_list(searchTerm) {
-		if (!searchTerm) {
-			this.render_invoice_list();
-			return;
-		}
-
-		const filtered = this.availableInvoices.filter(invoice => 
-			invoice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			(invoice.customer && invoice.customer.toLowerCase().includes(searchTerm.toLowerCase()))
-		);
-
-		this.render_invoice_list(filtered);
-	}
-
-	async load_invoice_for_modification(invoiceName) {
-		try {
-			// Close the modal first
-			document.getElementById('invoice-selection-modal').style.display = 'none';
-
-			// Load invoice details
-			const response = await frappe.call({
-				method: 'inventory.pos.api.get_pos_invoice_details',
-				args: {
-					invoice_name: invoiceName
-				}
-			});
-
-			if (response.message) {
-				const invoiceData = response.message;
+		const app = createApp({
+			template: appTemplate,
+			setup() {
+				// State
+				const loading = ref(false);
+				const showSessionDialog = ref(true);
+				const posProfiles = ref([]);
+				const selectedProfile = ref(null);
+				const openingAmount = ref(0);
+				const currentSession = ref(null);
+				const products = ref([]);
+				const productSearch = ref('');
+				const cart = ref([]);
+				const customers = ref([]);
+				const selectedCustomer = ref(null);
+				const posClients = ref([]);
+				const selectedPOSClient = ref(null);
+				const paymentMethod = ref('Cash');
+				const paidAmount = ref(0);
+				const refreshingStock = ref(false);
+				const completingSale = ref(false);
+				const modifyingInvoice = ref(null);
+				const showInvoiceModal = ref(false);
+				const availableInvoices = ref([]);
+				const invoiceSearch = ref('');
+				const invoiceFromDate = ref(null);
+				const invoiceToDate = ref(null);
+				const loadingInvoices = ref(false);
+				const showReceiptModal = ref(false);
+				const showProductDetailsModal = ref(false);
+				const selectedProductDetails = ref(null);
+				const loadingProductDetails = ref(false);
+				const lastInvoice = ref(null);
+				const receiptItems = ref([]);
+				const receiptTotal = ref(0);
+				const receiptPaid = ref(0);
+				const receiptChange = ref(0);
+				const shortcuts = ref({ functions: [], payments: [], products: [] });
 				
-				// Store original invoice name for updating
-				this.modifyingInvoice = invoiceName;
-				
-				// Clear current cart and reset payment amount
-				this.cart = [];
-				this.paidAmount = 0;
-				$('#paid-amount').val('');
-				
-				// Load invoice items into cart
-				invoiceData.items.forEach(item => {
-					this.cart.push({
-						item_code: item.item_code,
-						item_name: item.item_name,
-						qty: parseFloat(item.qty) || 1,
-						rate: parseFloat(item.rate) || 0,
-						amount: parseFloat(item.amount) || 0
-					});
+				const snackbar = reactive({
+					show: false,
+					message: '',
+					color: 'success'
+				});
+
+				const paymentMethods = ref([
+					{ title: __('Cash'), value: 'Cash' },
+					{ title: __('Card'), value: 'Card' },
+					{ title: __('Bank Transfer'), value: 'Bank Transfer' },
+					{ title: __('Credit'), value: 'Credit' }
+				]);
+
+				// Computed
+				const filteredProducts = computed(() => {
+					if (!productSearch.value) return products.value;
+					const search = productSearch.value.toLowerCase();
+					return products.value.filter(p => 
+						p.item_name.toLowerCase().includes(search) ||
+						p.item_code.toLowerCase().includes(search) ||
+						(p.barcode && p.barcode.toLowerCase().includes(search))
+					);
+				});
+
+				const cartTotal = computed(() => {
+					return cart.value.reduce((sum, item) => sum + item.amount, 0);
+				});
+
+				const changeAmount = computed(() => {
+					return Math.max(0, paidAmount.value - cartTotal.value);
+				});
+
+				const canCompleteSale = computed(() => {
+					if (cart.value.length === 0) return false;
+					if (paymentMethod.value === 'Credit') {
+						if (!selectedPOSClient.value) return false;
+						const available = selectedPOSClient.value.credit_limit - selectedPOSClient.value.current_balance;
+						return cartTotal.value <= available;
+					}
+					return paidAmount.value >= cartTotal.value;
+				});
+
+				const hasShortcuts = computed(() => {
+					return (shortcuts.value.functions?.length > 0) ||
+						   (shortcuts.value.payments?.length > 0) ||
+						   (shortcuts.value.products?.length > 0);
+				});
+
+				const filteredInvoices = computed(() => {
+					if (!invoiceSearch.value) return availableInvoices.value;
+					const search = invoiceSearch.value.toLowerCase();
+					return availableInvoices.value.filter(inv =>
+						inv.name.toLowerCase().includes(search) ||
+						(inv.customer && inv.customer.toLowerCase().includes(search))
+					);
+				});
+
+				// Methods
+				const showToast = (message, color = 'success') => {
+					snackbar.message = message;
+					snackbar.color = color;
+					snackbar.show = true;
+				};
+
+				const formatCurrency = (amount) => {
+					return new Intl.NumberFormat('ar-DZ', {
+						style: 'currency',
+						currency: 'DZD',
+						minimumFractionDigits: 2
+					}).format(amount || 0);
+				};
+
+				const getStockColor = (qty) => {
+					if (qty <= 0) return 'error';
+					if (qty <= 5) return 'warning';
+					return 'success';
+				};
+
+				const loadPOSProfiles = async () => {
+					try {
+						const response = await frappe.call({
+							method: 'frappe.client.get_list',
+							args: {
+								doctype: 'POS Profile',
+								fields: ['name', 'profile_name', 'currency', 'company_name', 'warehouse_name'],
+								limit_page_length: 0
+							}
+						});
+						posProfiles.value = response.message || [];
+					} catch (error) {
+						showToast(__('Error loading POS profiles'), 'error');
+					}
+				};
+
+				const checkExistingSession = async () => {
+					try {
+						const response = await frappe.call({
+							method: 'frappe.client.get_list',
+							args: {
+								doctype: 'POS Session',
+								fields: ['name', 'pos_profile', 'status', 'opening_amount'],
+								filters: [
+									['pos_user', '=', frappe.session.user],
+									['status', 'in', ['Opening', 'Open']]
+								],
+								limit_page_length: 1
+							}
+						});
+						if (response.message && response.message.length > 0) {
+							const session = response.message[0];
+							// Get warehouse from POS Profile
+							if (session.pos_profile) {
+								const profileResponse = await frappe.call({
+									method: 'frappe.client.get_value',
+									args: {
+										doctype: 'POS Profile',
+										filters: { name: session.pos_profile },
+										fieldname: ['warehouse_name']
+									}
+								});
+								if (profileResponse.message) {
+									session.warehouse = profileResponse.message.warehouse_name;
+								}
+							}
+							currentSession.value = session;
+							showSessionDialog.value = false;
+							await loadPOSData();
+						}
+					} catch (error) {
+						console.error('Error checking session:', error);
+					}
+				};
+
+				const startSession = async () => {
+					if (!selectedProfile.value) {
+						showToast(__('Please select a POS Profile'), 'warning');
+						return;
+					}
+					loading.value = true;
+					try {
+						const response = await frappe.call({
+							method: 'inventory.pos.doctype.pos_session.pos_session.create_opening_entry',
+							args: {
+								pos_profile: selectedProfile.value,
+								opening_amount: openingAmount.value
+							}
+						});
+						if (response.message) {
+							currentSession.value = response.message;
+							showSessionDialog.value = false;
+							showToast(__('Session started successfully!'));
+							await loadPOSData();
+						}
+					} catch (error) {
+						showToast(__('Error starting session: ') + error.message, 'error');
+					} finally {
+						loading.value = false;
+					}
+				};
+
+				const loadPOSData = async () => {
+					try {
+						const warehouse = currentSession.value?.warehouse || null;
+						const response = await frappe.call({
+							method: 'inventory.pos.api.get_pos_items',
+							args: { warehouse, search_term: '' }
+						});
+						products.value = (response.message || []).map(item => ({
+							...item,
+							available_qty: item.stock_qty || 0
+						}));
+					} catch (error) {
+						showToast(__('Error loading products'), 'error');
+					}
+					await loadShortcuts();
+				};
+
+				const loadShortcuts = async () => {
+					try {
+						const response = await frappe.call({
+							method: 'inventory.doctype.pos_shortcut.pos_shortcut.get_all_shortcuts'
+						});
+						shortcuts.value = response.message || {};
+					} catch (error) {
+						console.log('Shortcuts not available');
+					}
+				};
+
+				const refreshStock = async () => {
+					refreshingStock.value = true;
+					try {
+						await loadPOSData();
+						showToast(__('Stock refreshed'));
+					} finally {
+						refreshingStock.value = false;
+					}
+				};
+
+				const searchCustomers = async (query) => {
+					if (!query || query.length < 2) return;
+					try {
+						const response = await frappe.call({
+							method: 'inventory.pos.api.search_customers',
+							args: { search_term: query }
+						});
+						customers.value = response.message || [];
+					} catch (error) {
+						console.error('Error searching customers:', error);
+					}
+				};
+
+				const searchPOSClients = async (query) => {
+					if (!query || query.length < 2) return;
+					try {
+						const response = await frappe.call({
+							method: 'inventory.pos.doctype.pos_client.pos_client.search_pos_clients',
+							args: { search_term: query, limit: 20 }
+						});
+						posClients.value = response.message || [];
+					} catch (error) {
+						console.error('Error searching clients:', error);
+					}
+				};
+
+				const addToCart = (product) => {
+					if (product.available_qty <= 0) {
+						showToast(__('Item is out of stock'), 'warning');
+						return;
+					}
+					const existing = cart.value.find(item => item.item_code === product.item_code);
+					if (existing) {
+						existing.qty += 1;
+						existing.amount = existing.qty * existing.rate;
+					} else {
+						cart.value.push({
+							item_code: product.item_code,
+							item_name: product.item_name,
+							qty: 1,
+							rate: product.standard_rate || 0,
+							amount: product.standard_rate || 0
+						});
+					}
+					updatePaidAmount();
+					showToast(__('Added: ') + product.item_name);
+				};
+
+				const showProductDetails = async (product) => {
+					showProductDetailsModal.value = true;
+					selectedProductDetails.value = null;
+					loadingProductDetails.value = true;
+					
+					try {
+						const warehouse = currentSession.value?.warehouse || null;
+						const customer = selectedCustomer.value || null;
+						
+						const response = await frappe.call({
+							method: 'inventory.pos.api.get_product_details',
+							args: {
+								item_code: product.item_code,
+								warehouse: warehouse,
+								customer: customer
+							}
+						});
+						
+						if (response.message) {
+							selectedProductDetails.value = response.message;
+						} else {
+							showToast(__('Error loading product details'), 'error');
+							showProductDetailsModal.value = false;
+						}
+					} catch (error) {
+						console.error('Error loading product details:', error);
+						showToast(__('Error loading product details: ') + error.message, 'error');
+						showProductDetailsModal.value = false;
+					} finally {
+						loadingProductDetails.value = false;
+					}
+				};
+
+				const addToCartFromDetails = () => {
+					if (!selectedProductDetails.value) return;
+					
+					const product = {
+						item_code: selectedProductDetails.value.item_code,
+						item_name: selectedProductDetails.value.item_name,
+						standard_rate: selectedProductDetails.value.current_selling_price || selectedProductDetails.value.standard_rate || 0,
+						available_qty: selectedProductDetails.value.stock_qty || 0
+					};
+					
+					addToCart(product);
+					showProductDetailsModal.value = false;
+				};
+
+				const updateQuantity = (index, change) => {
+					const item = cart.value[index];
+					item.qty = Math.max(1, item.qty + change);
+					item.amount = item.qty * item.rate;
+					updatePaidAmount();
+				};
+
+				const removeFromCart = (index) => {
+					cart.value.splice(index, 1);
+					updatePaidAmount();
+				};
+
+				const clearCart = () => {
+					if (modifyingInvoice.value) {
+						const confirmed = confirm(__('Are you sure you want to cancel modifying this invoice?'));
+						if (!confirmed) return;
+					}
+					cart.value = [];
+					paidAmount.value = 0;
+					selectedCustomer.value = null;
+					selectedPOSClient.value = null;
+					paymentMethod.value = 'Cash';
+					modifyingInvoice.value = null;
+					updatePaidAmount();
+				};
+
+				const updatePaidAmount = () => {
+					if (!modifyingInvoice.value && paymentMethod.value !== 'Credit') {
+						paidAmount.value = cartTotal.value;
+					}
+				};
+
+				const completeSale = async () => {
+					if (!canCompleteSale.value) return;
+					completingSale.value = true;
+					try {
+						let response;
+						if (modifyingInvoice.value) {
+							response = await frappe.call({
+								method: 'inventory.pos.api.update_pos_invoice',
+								args: {
+									invoice_name: modifyingInvoice.value,
+									items: cart.value,
+									payments: [{ payment_method: paymentMethod.value, amount: paidAmount.value }],
+									customer: selectedCustomer.value || 'Walk-in Customer',
+									pos_client: selectedPOSClient.value?.name || null
+								}
+							});
+							if (response.message?.success) {
+								showToast(__('Invoice updated!'));
+								showReceipt({ name: response.message.new_invoice });
+							}
+						} else {
+							response = await frappe.call({
+								method: 'inventory.pos.doctype.pos_invoice.pos_invoice.create_pos_invoice',
+								args: {
+									pos_profile: currentSession.value.pos_profile,
+									pos_session: currentSession.value.name,
+									items: cart.value,
+									payments: [{ payment_method: paymentMethod.value, amount: paidAmount.value }],
+									customer: selectedCustomer.value || 'Walk-in Customer',
+									pos_client: selectedPOSClient.value?.name || null
+								}
+							});
+							if (response.message) {
+								showToast(__('Sale completed!'));
+								showReceipt(response.message);
+							}
+						}
+						await refreshStock();
+						clearCart();
+					} catch (error) {
+						showToast(__('Error completing sale: ') + error.message, 'error');
+					} finally {
+						completingSale.value = false;
+					}
+				};
+
+				const showReceipt = (invoice) => {
+					lastInvoice.value = invoice;
+					receiptItems.value = [...cart.value];
+					receiptTotal.value = cartTotal.value;
+					receiptPaid.value = paidAmount.value;
+					receiptChange.value = changeAmount.value;
+					showReceiptModal.value = true;
+				};
+
+				const printReceipt = () => {
+					const content = document.getElementById('receipt-content')?.innerHTML;
+					if (!content) return;
+					const win = window.open('', '_blank');
+					win.document.write(`
+						<html><head><title>Receipt</title>
+						<style>body{font-family:Arial;margin:20px;}.text-right{text-align:right;}</style>
+						</head><body>${content}</body></html>
+					`);
+					win.document.close();
+					win.print();
+				};
+
+				const closeSession = async () => {
+					const confirmed = await frappe.confirm(__('Close this session?'));
+					if (!confirmed) return;
+					try {
+						await frappe.call({
+							method: 'inventory.pos.doctype.pos_session.pos_session.close_session',
+							args: { session_name: currentSession.value.name }
+						});
+						showToast(__('Session closed'));
+						currentSession.value = null;
+						showSessionDialog.value = true;
+					} catch (error) {
+						showToast(__('Error closing session'), 'error');
+					}
+				};
+
+				const loadInvoicesForModification = async () => {
+					loadingInvoices.value = true;
+					try {
+						const response = await frappe.call({
+							method: 'inventory.pos.api.get_pos_invoices_for_modification',
+							args: { 
+								limit: 50,
+								from_date: invoiceFromDate.value || null,
+								to_date: invoiceToDate.value || null
+							}
+						});
+						availableInvoices.value = response.message || [];
+					} catch (error) {
+						console.error('Error loading invoices:', error);
+						showToast(__('Error loading invoices'), 'error');
+					} finally {
+						loadingInvoices.value = false;
+					}
+				};
+
+				const loadInvoiceForModification = async (invoiceName) => {
+					try {
+						const response = await frappe.call({
+							method: 'inventory.pos.api.get_pos_invoice_details',
+							args: { invoice_name: invoiceName }
+						});
+						if (response.message) {
+							const data = response.message;
+							modifyingInvoice.value = invoiceName;
+							
+							// Clear current cart and load invoice items
+							cart.value = data.items.map(item => ({
+								item_code: item.item_code,
+								item_name: item.item_name,
+								qty: parseFloat(item.qty) || 1,
+								rate: parseFloat(item.rate) || 0,
+								amount: parseFloat(item.amount) || 0
+							}));
+							
+							// Set customer
+							if (data.invoice.customer && data.invoice.customer !== 'Walk-in Customer') {
+								selectedCustomer.value = data.invoice.customer;
+							} else {
+								selectedCustomer.value = null;
+							}
+							
+							// Set payment information
+							if (data.payments?.length > 0) {
+								const totalPaid = data.payments.reduce((sum, p) => sum + p.amount, 0);
+								paidAmount.value = totalPaid;
+								paymentMethod.value = data.payments[0].payment_method;
+							} else {
+								paidAmount.value = cartTotal.value; // Auto-set to cart total
+								paymentMethod.value = 'Cash';
+							}
+							
+							showInvoiceModal.value = false;
+							showToast(__('Invoice loaded. You can now modify items and resave.'), 'success');
+						}
+					} catch (error) {
+						showToast(__('Error loading invoice: ') + error.message, 'error');
+					}
+				};
+
+				const executeShortcut = (shortcut) => {
+					switch (shortcut.action_type) {
+						case 'New Sale':
+						case 'Clear Cart':
+							clearCart();
+							break;
+						case 'Print Receipt':
+							printReceipt();
+							break;
+						case 'Close Session':
+							closeSession();
+							break;
+					}
+					showToast(__('Executed: ') + shortcut.shortcut_name, 'info');
+				};
+
+				const executePaymentShortcut = (shortcut) => {
+					paymentMethod.value = shortcut.shortcut_name;
+					showToast(__('Payment: ') + shortcut.shortcut_name, 'info');
+				};
+
+				const executeProductShortcut = (shortcut) => {
+					const product = products.value.find(p => p.item_code === shortcut.item_code);
+					if (product) {
+						addToCart(product);
+					}
+				};
+
+				// Watch for invoice modal open
+				watch(showInvoiceModal, (newVal) => {
+					if (newVal) {
+						// Reset dates to default (last 30 days)
+						if (!invoiceFromDate.value) {
+							const today = new Date();
+							const thirtyDaysAgo = new Date(today);
+							thirtyDaysAgo.setDate(today.getDate() - 30);
+							invoiceFromDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+							invoiceToDate.value = today.toISOString().split('T')[0];
+						}
+						loadInvoicesForModification();
+					}
 				});
 				
-				// Set customer
-				if (invoiceData.invoice.customer && invoiceData.invoice.customer !== 'Walk-in Customer') {
-					$('#customer-select').val(invoiceData.invoice.customer);
-					this.selectedCustomer = invoiceData.invoice.customer;
-				}
-				
-				// Set payment amount
-				if (invoiceData.payments && invoiceData.payments.length > 0) {
-					const totalPaid = invoiceData.payments.reduce((sum, payment) => sum + payment.amount, 0);
-					$('#paid-amount').val(totalPaid);
-					this.paidAmount = totalPaid;
-					
-					// Set payment method from first payment
-					$('#payment-method').val(invoiceData.payments[0].payment_method);
-				}
-				
-				// Update UI
-				this.render_cart();
-				this.update_cart_total();
-				this.update_change_display();
-				this.update_complete_sale_button();
-				
-				// Change button text to indicate modification
-				$('#complete-sale').text(__('Update Sale'));
-				
-				this.show_toast(__('Invoice loaded for modification'), 'info');
+				// Reload invoices when date filters change
+				watch([invoiceFromDate, invoiceToDate], () => {
+					if (showInvoiceModal.value) {
+						loadInvoicesForModification();
+					}
+				});
+
+				// Watch payment method changes
+				watch(paymentMethod, (newVal) => {
+					if (newVal === 'Credit') {
+						paidAmount.value = 0;
+					} else {
+						updatePaidAmount();
+					}
+				});
+
+				// Lifecycle
+				onMounted(async () => {
+					await loadPOSProfiles();
+					await checkExistingSession();
+				});
+
+				return {
+					// State
+					loading,
+					showSessionDialog,
+					posProfiles,
+					selectedProfile,
+					openingAmount,
+					currentSession,
+					products,
+					productSearch,
+					cart,
+					customers,
+					selectedCustomer,
+					posClients,
+					selectedPOSClient,
+					paymentMethod,
+					paymentMethods,
+					paidAmount,
+					refreshingStock,
+					completingSale,
+					modifyingInvoice,
+					showInvoiceModal,
+					availableInvoices,
+					invoiceSearch,
+					invoiceFromDate,
+					invoiceToDate,
+					loadingInvoices,
+					showReceiptModal,
+					showProductDetailsModal,
+					selectedProductDetails,
+					loadingProductDetails,
+					lastInvoice,
+					receiptItems,
+					receiptTotal,
+					receiptPaid,
+					receiptChange,
+					shortcuts,
+					snackbar,
+					// Computed
+					filteredProducts,
+					cartTotal,
+					changeAmount,
+					canCompleteSale,
+					hasShortcuts,
+					filteredInvoices,
+					// Methods
+					__,
+					formatCurrency,
+					getStockColor,
+					startSession,
+					refreshStock,
+					searchCustomers,
+					searchPOSClients,
+					addToCart,
+					updateQuantity,
+					removeFromCart,
+					clearCart,
+					completeSale,
+					printReceipt,
+					closeSession,
+					loadInvoiceForModification,
+					showProductDetails,
+					addToCartFromDetails,
+					executeShortcut,
+					executePaymentShortcut,
+					executeProductShortcut
+				};
 			}
+		});
 
-		} catch (error) {
-			frappe.msgprint(__('Error loading invoice: ') + error.message);
-		}
+		app.use(vuetify);
+		
+		// Clear wrapper and mount Vue app
+		$(this.wrapper).html('<div id="pos-vue-app"></div>');
+		app.mount('#pos-vue-app');
 	}
-
 }

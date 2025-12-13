@@ -8,9 +8,17 @@ from inventory.pos.doctype.pos_profile.pos_profile import get_default_pos_profil
 
 
 @frappe.whitelist()
-def get_pos_invoices_for_modification(limit=20):
+def get_pos_invoices_for_modification(limit=50, from_date=None, to_date=None):
     """Get recent POS invoices that can be modified"""
     try:
+        from frappe.utils import getdate, today, add_days
+        
+        # Default to last 30 days if not specified
+        if not from_date:
+            from_date = add_days(today(), -30)
+        if not to_date:
+            to_date = today()
+        
         # Get recent invoices from current user's sessions
         invoices = frappe.db.sql("""
             SELECT 
@@ -21,15 +29,19 @@ def get_pos_invoices_for_modification(limit=20):
                 pi.grand_total,
                 pi.status,
                 pi.pos_session,
-                ps.pos_profile
+                ps.pos_profile,
+                COUNT(pii.name) as item_count
             FROM "tabPOS Invoice" pi
             LEFT JOIN "tabPOS Session" ps ON pi.pos_session = ps.name
+            LEFT JOIN "tabPOS Invoice Item" pii ON pi.name = pii.parent
             WHERE pi.docstatus = 1
                 AND ps.pos_user = %s
-                AND pi.posting_date >= CURRENT_DATE - INTERVAL '7 days'
+                AND pi.posting_date BETWEEN %s AND %s
+            GROUP BY pi.name, pi.posting_date, pi.posting_time, pi.customer, 
+                     pi.grand_total, pi.status, pi.pos_session, ps.pos_profile
             ORDER BY pi.creation DESC
             LIMIT %s
-        """, (frappe.session.user, limit), as_dict=True)
+        """, (frappe.session.user, from_date, to_date, limit), as_dict=True)
         
         return invoices
         
@@ -105,7 +117,7 @@ def update_pos_invoice(invoice_name, items, payments, customer="Walk-in Customer
         
         # Check permissions
         session = frappe.get_doc("POS Session", invoice.pos_session)
-        if session.user != frappe.session.user:
+        if session.pos_user != frappe.session.user:
             frappe.throw(_("You don't have permission to modify this invoice"))
         
         # Cancel the original invoice
@@ -224,8 +236,9 @@ def get_current_open_session():
 
 
 @frappe.whitelist()
-def get_pos_items(warehouse=None, search_term=""):
-    """Get items available for POS with stock information"""
+def get_pos_items(warehouse=None, search_term="", customer=None):
+    """Get items available for POS with stock information and cached prices"""
+    from inventory.inventory.doctype.item_price.item_price import get_all_selling_prices_cached, get_item_selling_price
 
     try:
         # If no warehouse is provided, get it from the default POS profile
@@ -244,12 +257,12 @@ def get_pos_items(warehouse=None, search_term=""):
             search_pattern = f"%{search_term}%"
             values.extend([search_pattern, search_pattern])
         
-        # Build the query using Stock Ledger Entry
+        # Get items with stock (simpler query without price join)
         query = f"""
             SELECT 
                 item.item_code,
                 item.item_name,
-                item.item_group,
+                item.item_category,
                 item.standard_rate,
                 item.item_image,
                 item.description,
@@ -269,14 +282,144 @@ def get_pos_items(warehouse=None, search_term=""):
             LIMIT 100
         """
         
-        values.append(warehouse)
-        items = frappe.db.sql(query, values, as_dict=True)
+        # Warehouse comes first (for the subquery), then other filter values
+        query_values = [warehouse] + values
+        items = frappe.db.sql(query, query_values, as_dict=True)
+        
+        # Get cached prices (fast lookup)
+        price_map = get_all_selling_prices_cached()
+        
+        # Apply prices to items
+        for item in items:
+            item_code = item.get('item_code')
+            
+            # If customer is specified, try to get customer-specific price
+            if customer:
+                customer_price = get_item_selling_price(item_code, customer)
+                if customer_price > 0:
+                    item['standard_rate'] = customer_price
+                    continue
+            
+            # Use cached default price
+            if item_code in price_map:
+                item['standard_rate'] = price_map[item_code]
+            # If no price in cache, keep the item.standard_rate from database
         
         return items
         
     except Exception as e:
         frappe.log_error(f"Error in get_pos_items: {str(e)}")
         return []
+
+
+@frappe.whitelist()
+def get_product_details(item_code, warehouse=None, customer=None):
+    """Get detailed product information including all prices for POS"""
+    try:
+        from frappe.utils import today, flt
+        
+        # Get item document
+        item = frappe.get_doc("Item", item_code)
+        
+        # Get warehouse from default profile if not provided
+        if not warehouse:
+            default_profile = get_default_pos_profile()
+            if default_profile and default_profile.warehouse_name:
+                warehouse = default_profile.warehouse_name
+        
+        # Get stock quantity
+        stock_qty = 0
+        if warehouse:
+            stock_result = frappe.db.sql("""
+                SELECT COALESCE(SUM(actual_qty), 0) as stock_qty
+                FROM `tabStock Ledger Entry`
+                WHERE item = %s AND warehouse = %s
+            """, (item_code, warehouse), as_dict=True)
+            if stock_result:
+                stock_qty = stock_result[0].stock_qty or 0
+        
+        # Get all selling prices
+        today_date = today()
+        selling_prices = frappe.db.sql("""
+            SELECT 
+                ip.price_list_rate,
+                ip.customer,
+                ip.is_default_price,
+                ip.valid_from,
+                ip.valid_upto,
+                ip.enabled
+            FROM `tabItem Price` ip
+            WHERE ip.item_code = %s
+                AND ip.selling = 1
+                AND ip.enabled = 1
+                AND (ip.valid_from IS NULL OR ip.valid_from <= %s)
+                AND (ip.valid_upto IS NULL OR ip.valid_upto >= %s)
+            ORDER BY ip.is_default_price DESC, ip.valid_from DESC
+        """, (item_code, today_date, today_date), as_dict=True)
+        
+        # Get all buying prices
+        buying_prices = frappe.db.sql("""
+            SELECT 
+                ip.price_list_rate,
+                ip.supplier,
+                ip.is_default_price,
+                ip.valid_from,
+                ip.valid_upto,
+                ip.enabled
+            FROM `tabItem Price` ip
+            WHERE ip.item_code = %s
+                AND ip.buying = 1
+                AND ip.enabled = 1
+                AND (ip.valid_from IS NULL OR ip.valid_from <= %s)
+                AND (ip.valid_upto IS NULL OR ip.valid_upto >= %s)
+            ORDER BY ip.is_default_price DESC, ip.valid_from DESC
+        """, (item_code, today_date, today_date), as_dict=True)
+        
+        # Get current selling price (customer-specific or default)
+        current_selling_price = 0
+        if customer:
+            customer_price = [p for p in selling_prices if p.customer == customer]
+            if customer_price:
+                current_selling_price = customer_price[0].price_list_rate
+        
+        if not current_selling_price:
+            default_price = [p for p in selling_prices if p.is_default_price and not p.customer]
+            if default_price:
+                current_selling_price = default_price[0].price_list_rate
+            elif selling_prices:
+                current_selling_price = selling_prices[0].price_list_rate
+        
+        # Get current buying price
+        current_buying_price = 0
+        if buying_prices:
+            default_buying = [p for p in buying_prices if p.is_default_price]
+            if default_buying:
+                current_buying_price = default_buying[0].price_list_rate
+            else:
+                current_buying_price = buying_prices[0].price_list_rate
+        
+        return {
+            "item_code": item.item_code,
+            "item_name": item.item_name,
+            "item_category": item.item_category,
+            "description": item.description,
+            "unit_of_measurement": item.unit_of_measurement,
+            "standard_rate": item.standard_rate or 0,
+            "valuation_rate": item.valuation_rate or 0,
+            "last_purchase_rate": item.last_purchase_rate or 0,
+            "minimum_stock_level": item.minimum_stock_level or 0,
+            "reorder_level": item.reorder_level or 0,
+            "stock_qty": stock_qty,
+            "current_selling_price": current_selling_price,
+            "current_buying_price": current_buying_price,
+            "selling_prices": selling_prices[:10],  # Limit to 10 most recent
+            "buying_prices": buying_prices[:10],  # Limit to 10 most recent
+            "warehouse": warehouse
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error in get_product_details: {str(e)}")
+        return None
 
 
 @frappe.whitelist()

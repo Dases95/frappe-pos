@@ -164,19 +164,21 @@
    "fieldtype": "Currency",
    "label": "Valuation Rate",
    "options": "currency",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "last_purchase_rate",
    "fieldtype": "Currency",
    "label": "Last Purchase Rate",
    "options": "currency",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "hide_toolbar": 1,
  "links": [],
- "modified": "2025-12-10 08:08:13.406029",
+ "modified": "2025-12-10 09:45:01.765305",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "Item",

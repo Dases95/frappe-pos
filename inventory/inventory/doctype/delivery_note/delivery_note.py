@@ -27,18 +27,53 @@ class DeliveryNote(Document):
     
     def check_stock_availability(self):
         """
-        Check if stock is available for all items
+        Check if stock is available for all items.
+        Throws error if stock is insufficient to prevent submission.
         """
+        # Get source warehouse from Inventory Settings
+        try:
+            source_warehouse = frappe.db.get_single_value("Inventory Settings", "default_warehouse")
+            if not source_warehouse:
+                frappe.throw("Default Warehouse not set in Inventory Settings. Cannot validate stock availability.")
+        except frappe.DoesNotExistError:
+            frappe.throw("Inventory Settings doctype not found. Please create it first.")
+        
+        insufficient_items = []
+        
         for item in self.items:
-            # Get available stock from all warehouses
+            # Get available stock from the source warehouse
             available_stock = frappe.db.sql("""
-                SELECT SUM(actual_qty) 
-                FROM "tabStock Ledger Entry" 
-                WHERE item = %s AND is_cancelled = 0
-            """, item.item)[0][0] or 0
+                SELECT COALESCE(SUM(actual_qty), 0) 
+                FROM `tabStock Ledger Entry` 
+                WHERE item = %s 
+                AND warehouse = %s 
+                AND is_cancelled = 0
+            """, (item.item, source_warehouse))[0][0] or 0
             
             if available_stock < item.quantity:
-                frappe.msgprint(f"Insufficient stock for item {item.item_name} ({item.item}). Available: {available_stock}, Required: {item.quantity}")
+                insufficient_items.append({
+                    "item": item.item,
+                    "item_name": item.item_name or item.item,
+                    "available": available_stock,
+                    "required": item.quantity,
+                    "shortage": item.quantity - available_stock
+                })
+        
+        # If any items have insufficient stock, throw error
+        if insufficient_items:
+            error_messages = []
+            for item_info in insufficient_items:
+                error_messages.append(
+                    f"<li><b>{item_info['item_name']}</b> ({item_info['item']}): "
+                    f"Available: {item_info['available']}, Required: {item_info['required']}, "
+                    f"Shortage: {item_info['shortage']}</li>"
+                )
+            
+            frappe.throw(
+                f"Insufficient stock in warehouse <b>{source_warehouse}</b> for the following items:<br><ul>{''.join(error_messages)}</ul>"
+                f"<br>Please check stock availability before creating this Delivery Note.",
+                title="Insufficient Stock"
+            )
     
     def on_submit(self):
         # Create Stock Entry

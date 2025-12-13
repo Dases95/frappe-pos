@@ -16,6 +16,7 @@ Auto Create Batch,Création automatique de lots
 Auto Create Batch for Receipt Entries,Création automatique de lots pour les entrées de réception
 Automatically Set Serial Nos,Définir automatiquement les numéros de série
 Available,Disponible
+Available,Disponible
 Available Qty,Qté disponible
 Avg Order Value,Valeur moyenne de commande
 Avg Rate,Taux moyen
@@ -99,6 +100,7 @@ Inactive,Inactif
 Inactive Customers,Clients inactifs
 Importer,Importateur
 Insufficient stock for item,Stock insuffisant pour l'article
+Insufficient Stock,Stock insuffisant
 Inventory,Inventaire
 Inventory Manager,Gestionnaire d'inventaire
 Inventory Section,Section inventaire
@@ -147,6 +149,7 @@ Partially Delivered,Partiellement livré
 Party Specific,Spécifique à la partie
 Payment Terms,Conditions de paiement
 Planned End Date,Date de fin prévue
+Please check stock availability before creating this Delivery Note,Veuillez vérifier la disponibilité du stock avant de créer ce bon de livraison
 Price Information,Informations sur les prix
 Price List Rate,Taux de liste de prix
 Price List Section,Section liste de prix
@@ -178,6 +181,7 @@ Reorder Level,Niveau de réapprovisionnement
 Reports,Rapports
 Required,Requis
 Retailer,Détaillant
+Shortage,Rupture
 Sales,Ventes
 Sales Order,Bon de commande de vente
 Sale Count,Nombre de ventes

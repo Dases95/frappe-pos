@@ -8,9 +8,15 @@ class StockEntry(Document):
         if self.entry_type == "Receipt":
             if not self.target_warehouse:
                 frappe.throw("Target Warehouse is required for Receipt entry")
+        elif self.entry_type == "Purchase":
+            if not self.target_warehouse:
+                frappe.throw("Target Warehouse is required for Purchase entry")
         elif self.entry_type == "Issue":
             if not self.source_warehouse:
                 frappe.throw("Source Warehouse is required for Issue entry")
+        elif self.entry_type == "Sale":
+            if not self.source_warehouse:
+                frappe.throw("Source Warehouse is required for Sale entry")
         elif self.entry_type == "Transfer":
             if not self.source_warehouse or not self.target_warehouse:
                 frappe.throw("Both Source and Target Warehouses are required for Transfer entry")
@@ -55,8 +61,8 @@ class StockEntry(Document):
         self.update_stock_ledger(is_cancelled=True)
     
     def update_item_valuation_rates(self):
-        # Only update valuation rates for receipt entries
-        if self.entry_type in ["Receipt", "Manufacture"]:
+        # Only update valuation rates for receipt/purchase entries
+        if self.entry_type in ["Receipt", "Purchase", "Manufacture"]:
             for item_row in self.items:
                 if not item_row.rate:
                     continue
@@ -86,7 +92,7 @@ class StockEntry(Document):
                     frappe.db.set_value("Item", item_row.item, "valuation_rate", new_valuation_rate)
                     
                     # For purchase receipts, update last purchase rate as well
-                    if self.entry_type == "Receipt":
+                    if self.entry_type in ["Receipt", "Purchase"]:
                         frappe.db.set_value("Item", item_row.item, "last_purchase_rate", item_row.rate)
     
     def update_stock_ledger(self, is_cancelled=False):
@@ -102,7 +108,29 @@ class StockEntry(Document):
                     item.rate,
                     is_cancelled
                 )
+            elif self.entry_type == "Purchase":
+                # Purchase from supplier - adds stock to target warehouse
+                self.create_stock_ledger_entry(
+                    item.item,
+                    self.target_warehouse,
+                    item.quantity,
+                    "in",
+                    item.batch,
+                    item.rate,
+                    is_cancelled
+                )
             elif self.entry_type == "Issue":
+                self.create_stock_ledger_entry(
+                    item.item,
+                    self.source_warehouse,
+                    item.quantity,
+                    "out",
+                    item.batch,
+                    item.rate,
+                    is_cancelled
+                )
+            elif self.entry_type == "Sale":
+                # Sale to customer - removes stock from source warehouse
                 self.create_stock_ledger_entry(
                     item.item,
                     self.source_warehouse,

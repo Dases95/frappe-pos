@@ -122,7 +122,7 @@ def create_opening_entry(pos_profile, opening_amount=0):
 		{
 			"pos_profile": pos_profile,
 			"status": ["in", ["Opening", "Open"]],
-			"user": frappe.session.user
+			"pos_user": frappe.session.user
 		},
 		"name"
 	)
@@ -138,7 +138,7 @@ def create_opening_entry(pos_profile, opening_amount=0):
 	# Create new session
 	session = frappe.new_doc("POS Session")
 	session.pos_profile = pos_profile
-	session.user = frappe.session.user
+	session.pos_user = frappe.session.user
 	session.period_start_date = getdate()
 	session.opening_amount = flt(opening_amount)
 	session.status = "Opening"
@@ -164,7 +164,7 @@ def get_open_session():
 	return frappe.db.get_value(
 		"POS Session",
 		{
-			"user": frappe.session.user,
+			"pos_user": frappe.session.user,
 			"status": ["in", ["Opening", "Open"]]
 		},
 		"name"

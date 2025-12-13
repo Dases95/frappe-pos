@@ -231,21 +231,21 @@ def create_pos_invoice(pos_profile, items, customer="Walk-in Customer", payments
 		session_data = frappe.db.get_value(
 			"POS Session",
 			pos_session,
-			["status", "pos_profile", "user"],
+			["status", "pos_profile", "pos_user"],
 			as_dict=True
 		)
 		if not session_data:
 			frappe.throw(_("Invalid POS session provided."))
 		if session_data.status != "Open":
 			frappe.throw(_("POS Session must be Open to create transactions."))
-		if session_data.user != frappe.session.user:
+		if session_data.pos_user != frappe.session.user:
 			frappe.throw(_("You can only create invoices for your own session."))
 		session = pos_session
 	else:
 		# Get open session for current user
 		session = frappe.db.get_value(
 			"POS Session",
-			{"pos_profile": pos_profile, "status": "Open", "user": frappe.session.user},
+			{"pos_profile": pos_profile, "status": "Open", "pos_user": frappe.session.user},
 			"name"
 		)
 		
